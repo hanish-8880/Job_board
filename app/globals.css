@@ -1,26 +1,73 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --color-paper: #faf8f3;
+  --color-paper-raised: #ffffff;
+  --color-ink: #16181d;
+  --color-ink-soft: #4a4d55;
+  --color-ink-faint: #82858e;
+  --color-rule: #ddd8ca;
+  --color-rule-strong: #c7c1ae;
+
+  --color-navy: #0b2545;
+  --color-navy-ink: #08192f;
+
+  --color-strong: #1f5c3d;
+  --color-strong-bg: #e7f0e9;
+  --color-moderate: #8a6a1f;
+  --color-moderate-bg: #f5eeda;
+  --color-weak: #8c2f2f;
+  --color-weak-bg: #f5e5e2;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-paper: var(--color-paper);
+  --color-paper-raised: var(--color-paper-raised);
+  --color-ink: var(--color-ink);
+  --color-ink-soft: var(--color-ink-soft);
+  --color-ink-faint: var(--color-ink-faint);
+  --color-rule: var(--color-rule);
+  --color-rule-strong: var(--color-rule-strong);
+  --color-navy: var(--color-navy);
+  --color-navy-ink: var(--color-navy-ink);
+  --color-strong: var(--color-strong);
+  --color-strong-bg: var(--color-strong-bg);
+  --color-moderate: var(--color-moderate);
+  --color-moderate-bg: var(--color-moderate-bg);
+  --color-weak: var(--color-weak);
+  --color-weak-bg: var(--color-weak-bg);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-serif: var(--font-source-serif);
+  --font-sans: var(--font-plex-sans);
+  --font-mono: var(--font-plex-mono);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+::selection {
+  background: var(--color-navy);
+  color: var(--color-paper);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-navy);
+  outline-offset: 2px;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
