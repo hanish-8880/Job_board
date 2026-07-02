@@ -1,11 +1,19 @@
+import { CheckCircle2, AlertCircle, XCircle } from "lucide-react";
 import type { SignalTier } from "@/lib/signal";
 import { SIGNAL_TIER_LABEL } from "@/lib/signal";
+import Badge, { type BadgeVariant } from "./ui/Badge";
 
-const TIER_STYLES: Record<SignalTier, string> = {
-  strong: "border-strong text-strong bg-strong-bg",
-  moderate: "border-moderate text-moderate bg-moderate-bg",
-  weak: "border-weak text-weak bg-weak-bg",
+const TIER_VARIANT: Record<SignalTier, BadgeVariant> = {
+  strong: "strong",
+  moderate: "moderate",
+  weak: "weak",
 };
+
+const TIER_ICON = {
+  strong: CheckCircle2,
+  moderate: AlertCircle,
+  weak: XCircle,
+} as const;
 
 export default function SignalBadge({
   score,
@@ -15,11 +23,9 @@ export default function SignalBadge({
   tier: SignalTier;
 }) {
   return (
-    <span
-      className={`inline-flex items-center gap-1.5 rounded-sm border px-2 py-1 font-mono text-[11px] uppercase tracking-[0.08em] ${TIER_STYLES[tier]}`}
-    >
+    <Badge variant={TIER_VARIANT[tier]} icon={TIER_ICON[tier]}>
       {SIGNAL_TIER_LABEL[tier]}
-      <span className="tabular-nums">· {score}</span>
-    </span>
+      <span className="font-mono tabular-nums">· {score}</span>
+    </Badge>
   );
 }
