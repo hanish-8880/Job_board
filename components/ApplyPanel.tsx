@@ -2,7 +2,10 @@
 
 import { useState, useTransition, type FormEvent } from "react";
 import Link from "next/link";
+import { CheckCircle2, Send } from "lucide-react";
 import { applyToJobAction } from "@/app/actions/jobs";
+import Button, { buttonVariants } from "./ui/Button";
+import { Textarea } from "./ui/fields";
 
 export default function ApplyPanel({
   jobId,
@@ -23,10 +26,7 @@ export default function ApplyPanel({
 
   if (!isLoggedIn) {
     return (
-      <Link
-        href={`/login?next=/jobs/${jobId}`}
-        className="inline-block rounded-sm bg-navy px-5 py-3 font-mono text-xs uppercase tracking-[0.1em] text-paper transition-colors hover:bg-navy-ink"
-      >
+      <Link href={`/login?next=/jobs/${jobId}`} className={buttonVariants()}>
         Log in to apply
       </Link>
     );
@@ -34,27 +34,25 @@ export default function ApplyPanel({
 
   if (applied) {
     return (
-      <div className="rounded-sm border border-strong bg-strong-bg px-4 py-4">
-        <p className="font-mono text-xs uppercase tracking-[0.1em] text-strong">
-          Application submitted
-        </p>
-        <p className="mt-2 text-sm text-ink">
-          Your application to {company} is recorded. Track its status from
-          your dashboard&apos;s Applied page.
-        </p>
+      <div className="flex items-start gap-3 rounded-xl border border-strong/25 bg-strong-bg px-4 py-4">
+        <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-strong" aria-hidden />
+        <div>
+          <p className="text-sm font-semibold text-strong">Application submitted</p>
+          <p className="mt-1 text-sm text-ink">
+            Your application to {company} is recorded. Track its status from
+            your dashboard&apos;s Applied page.
+          </p>
+        </div>
       </div>
     );
   }
 
   if (!showForm) {
     return (
-      <button
-        type="button"
-        onClick={() => setShowForm(true)}
-        className="rounded-sm bg-navy px-5 py-3 font-mono text-xs uppercase tracking-[0.1em] text-paper transition-colors hover:bg-navy-ink"
-      >
+      <Button onClick={() => setShowForm(true)}>
+        <Send className="h-4 w-4" aria-hidden />
         Apply for this role
-      </button>
+      </Button>
     );
   }
 
@@ -72,40 +70,29 @@ export default function ApplyPanel({
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="rounded-sm border border-rule bg-paper-raised p-4"
-    >
+    <form onSubmit={handleSubmit} className="rounded-xl border border-border bg-background p-4">
       <label
-        className="block font-mono text-xs uppercase tracking-[0.08em] text-ink-soft"
+        className="block text-xs font-semibold uppercase tracking-[0.06em] text-ink-soft"
         htmlFor="coverLetter"
       >
         Cover letter (optional)
       </label>
-      <textarea
+      <Textarea
         id="coverLetter"
         rows={5}
         value={coverLetter}
         onChange={(event) => setCoverLetter(event.target.value)}
-        className="mt-1 w-full rounded-sm border border-rule-strong bg-paper px-3 py-2 text-sm text-ink placeholder:text-ink-faint focus:border-navy"
+        className="mt-1.5"
         placeholder="Optional — write one here, or generate a draft with the AI Cover Letter tool from your dashboard and paste it in."
       />
-      {error && <p className="mt-1 text-sm text-weak">{error}</p>}
+      {error && <p className="mt-1.5 text-sm text-weak">{error}</p>}
       <div className="mt-3 flex flex-wrap gap-3">
-        <button
-          type="submit"
-          disabled={isPending}
-          className="rounded-sm bg-navy px-5 py-3 font-mono text-xs uppercase tracking-[0.1em] text-paper transition-colors hover:bg-navy-ink disabled:opacity-60"
-        >
+        <Button type="submit" disabled={isPending}>
           {isPending ? "Submitting…" : "Submit application"}
-        </button>
-        <button
-          type="button"
-          onClick={() => setShowForm(false)}
-          className="rounded-sm border border-rule-strong px-5 py-3 font-mono text-xs uppercase tracking-[0.1em] text-ink-soft transition-colors hover:border-navy hover:text-navy"
-        >
+        </Button>
+        <Button type="button" variant="secondary" onClick={() => setShowForm(false)}>
           Cancel
-        </button>
+        </Button>
       </div>
     </form>
   );

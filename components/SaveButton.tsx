@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
+import { Bookmark, BookmarkCheck } from "lucide-react";
 import { toggleBookmarkAction } from "@/app/actions/jobs";
 
 export default function SaveButton({
@@ -22,8 +23,9 @@ export default function SaveButton({
     return (
       <Link
         href={`/login?next=/jobs/${jobId}`}
-        className={`shrink-0 rounded-sm border border-rule-strong px-3 py-1.5 text-center font-mono text-[11px] uppercase tracking-[0.08em] text-ink-soft transition-colors hover:border-navy hover:text-navy ${className ?? ""}`}
+        className={`inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-border-strong px-3 py-1.5 text-sm font-medium text-ink-soft transition-colors hover:border-primary hover:text-primary ${className ?? ""}`}
       >
+        <Bookmark className="h-4 w-4" aria-hidden />
         Log in to save
       </Link>
     );
@@ -47,12 +49,13 @@ export default function SaveButton({
       onClick={handleClick}
       disabled={isPending}
       aria-pressed={saved}
-      className={`shrink-0 rounded-sm border px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.08em] transition-colors disabled:opacity-60 ${
+      className={`inline-flex shrink-0 items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors disabled:opacity-60 ${
         saved
-          ? "border-navy bg-navy text-paper"
-          : "border-rule-strong text-ink-soft hover:border-navy hover:text-navy"
+          ? "border-primary bg-primary-soft text-primary"
+          : "border-border-strong text-ink-soft hover:border-primary hover:text-primary"
       } ${className ?? ""}`}
     >
+      {saved ? <BookmarkCheck className="h-4 w-4" aria-hidden /> : <Bookmark className="h-4 w-4" aria-hidden />}
       {saved ? "Saved" : "Save"}
     </button>
   );

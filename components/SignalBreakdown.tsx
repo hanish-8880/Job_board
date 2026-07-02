@@ -1,26 +1,29 @@
+import { Check, X } from "lucide-react";
 import type { SignalResult } from "@/lib/signal";
+import Card from "./ui/Card";
 
 export default function SignalBreakdown({ result }: { result: SignalResult }) {
   return (
-    <div className="rounded-sm border border-rule bg-paper-raised">
-      <div className="flex items-center justify-between border-b border-rule px-4 py-3 sm:px-5">
-        <h2 className="font-serif text-lg font-semibold text-ink">
-          Signal Score breakdown
-        </h2>
-        <span className="font-mono text-sm tabular-nums text-ink-soft">
+    <Card>
+      <div className="flex items-center justify-between border-b border-border px-5 py-4">
+        <h2 className="text-lg font-bold text-ink">Signal Score breakdown</h2>
+        <span className="text-sm font-semibold tabular-nums text-ink-soft">
           {result.score}/100
         </span>
       </div>
-      <ul className="divide-y divide-rule">
+      <ul className="divide-y divide-border">
         {result.checks.map((check) => (
-          <li key={check.id} className="flex items-start gap-3 px-4 py-3 sm:px-5">
+          <li key={check.id} className="flex items-start gap-3 px-5 py-3.5">
             <span
-              aria-hidden
-              className={`mt-0.5 font-mono text-sm ${
-                check.passed ? "text-strong" : "text-weak"
+              className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
+                check.passed ? "bg-strong-bg text-strong" : "bg-weak-bg text-weak"
               }`}
             >
-              {check.passed ? "✓" : "✗"}
+              {check.passed ? (
+                <Check className="h-3.5 w-3.5" aria-hidden />
+              ) : (
+                <X className="h-3.5 w-3.5" aria-hidden />
+              )}
             </span>
             <div className="min-w-0 flex-1">
               <p className="text-sm font-medium text-ink">
@@ -35,10 +38,10 @@ export default function SignalBreakdown({ result }: { result: SignalResult }) {
           </li>
         ))}
       </ul>
-      <p className="border-t border-rule px-4 py-3 font-mono text-xs text-ink-faint sm:px-5">
+      <p className="border-t border-border px-5 py-3 text-xs text-ink-faint">
         Computed only from this listing&apos;s own text and numbers — no
         external data, no model, no guesswork.
       </p>
-    </div>
+    </Card>
   );
 }
