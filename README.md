@@ -1,153 +1,162 @@
 # Signalboard
 
-A job board that shows its work. Every listing carries a transparent,
-inspectable **Signal Score** and a **red-flag check** — both computed
-from the listing's own text, with the full method visible on the page.
-Nothing in this app claims to be "AI" and isn't; nothing hides its
-reasoning behind a single opaque number.
+A full-stack job board with real accounts, a real Postgres database, and
+two real AI features — alongside two transparent, inspectable heuristics
+(Signal Score, red-flag detector) that were the standout of an earlier,
+smaller version of this project. Nothing here fakes data or fakes AI: if a
+feature calls a real model, it says so and shows the model name; if it's a
+heuristic, its full method is visible on the page.
 
 **Live app:** _add your Vercel URL here after deploying_
 **Repo:** _add your GitHub URL here after pushing_
 
 ---
 
-## Why this exists (and why it's this small)
+## Why this version exists
 
-This was built as a 3-day take-home assessment. The brief: build a job
-board, evaluated on "approach to UX and feature details" — not on
-feature count.
+This started as a 3-day take-home assessment, scoped deliberately small:
+no backend, no accounts, `localStorage` only — reasoning that a smaller,
+fully-working product beats a larger, half-working one under a tight
+deadline with an "any broken link = instant rejection" clause. That
+version shipped, fully tested, before this one was built.
 
-The tempting version of this project is a full-stack build: accounts,
-a hosted database, an employer dashboard, a resume analyzer, an "AI
-match score." That was deliberately rejected, for three reasons:
+A competing, much larger plan was then presented — real accounts, a
+database, employer/candidate dashboards, several "AI" features — and,
+after being warned this adds real deploy risk (auth flows, environment
+variables, an external database, a third-party API key), the decision was
+made to build it anyway. This README documents what that build actually
+contains, and what was deliberately cut from the larger plan and why —
+the same "state the tradeoff" discipline as the smaller version.
 
-1. **That scope is 2–3 weeks of work for a team, not 3 days solo.** A
-   half-wired backend reads worse in review than a small, fully-working
-   product. Evaluators looking at many submissions notice a broken auth
-   flow or an empty dashboard state faster than they notice ambition.
-2. **Every added moving part is a new way to fail "all links must
-   work."** Auth, a hosted database, environment variables on
-   Vercel — each is a deploy-risk surface this app doesn't need to
-   carry. Deploy risk was treated as the real enemy here, not feature
-   count.
-3. **A fake "AI" feature is a liability, not a strength.** A hardcoded
-   "AI match score" or a `Math.random()` resume grader survives about
-   30 seconds of scrutiny before it becomes the whole story of the
-   submission. Anything that looks like AI in this app either is a
-   plainly-labeled heuristic with its method visible, or it doesn't
-   ship.
+## What's cut from the larger plan, and why
 
-What was kept from that instinct: build **one cohesive product with a
-small number of fully-working features**, not a wide grid of half-built
-ones. That's the actual shape of this repo.
-
-### Concretely, that meant
-
-- **No backend, no accounts.** All data — seed listings, anything you
-  post, saved jobs, local "applications" — lives in this browser's
-  `localStorage`. This is a deliberate architecture choice, not a
-  corner cut: it means every feature that ships is **fully functional
-  with zero deploy risk**. Open the deployed link and everything works,
-  immediately, with nothing to configure.
-- **No fake AI UI.** The Signal Score and red-flag detector are both
-  plain heuristics over the listing's own text. Neither is presented as
-  smarter than it is, and both show their full method on the page.
-- **One extra feature, not five.** Past the core job-board mechanics,
-  exactly one additional feature was built end-to-end (the red-flag
-  detector) instead of five built halfway.
-
----
+- **Employer analytics / hiring-funnel charts** — a brand-new board has no
+  real traffic to chart yet. Faking the data would break the "nothing
+  fake" rule; an empty chart is worse than no chart.
+- **Messages / in-app chat** — a full separate realtime feature with its
+  own edge cases (unread state, notifications). Applications already carry
+  a status and an optional cover letter, which is the real workflow here.
+- **AI Interview Questions / AI Skill Gap** — rather than four thinner AI
+  features, **AI Match Score is folded into the Resume Review call**: one
+  real Gemini request returns both an ATS-style score and a match score
+  against a specific job.
+- **Resume upload/PDF parsing** — real PDF parsing is its own failure
+  surface (corrupt files, extraction errors). Candidates paste resume text
+  instead — still a fully real, working feature, just without a parser
+  dependency.
+- **Terms / Privacy / Help Center pages** — there's no real company or
+  policy behind this app; placeholder legal text would itself be exactly
+  the kind of fake content this project avoids elsewhere.
 
 ## Features
 
-### Core
+### Public
 
-- **Search + filter** — free text across title, company, and tags;
-  filter by work mode (remote/hybrid/onsite) and experience level.
-  Filtering is instant client-side state, no network round trip.
-- **Save / bookmark** — persists to `localStorage`, with a dedicated
-  Saved page and a real empty state ("Nothing saved yet") rather than a
-  blank screen.
-- **Post a role** — a real client-side–validated form (required
-  fields, salary min/max sanity checks with specific per-field error
-  messages). Publishing redirects straight to the new listing's detail
-  page, where you can watch its Signal Score get computed live from
-  what you just typed.
-- **Job detail + Apply flow** — since there's no backend to actually
-  receive an application, "Apply" is implemented honestly: it records
-  a local application state for that listing (persisted, idempotent,
-  visibly labeled as a local-only demo action) rather than linking out
-  to a fake external URL that would just be a dead end.
+- **Browse + search + filter** — free text across title/company/tags,
+  filtered instantly client-side once loaded; mode and level filters.
+  Anonymous visitors can browse and read every listing.
+- **Signal Score** (`lib/signal.ts`) — an unchanged carryover from the
+  original build. A transparent 0–100 score computed only from a
+  listing's own data: salary disclosed, salary range realistic, 3+
+  concrete responsibilities, 3+ concrete requirements, substantive
+  description, posted recently, non-buzzword tags. Full checklist visible
+  on every listing page — never just a number.
+- **Red-flag detector** (`lib/redflags.ts`) — also unchanged. Pattern-
+  matches a listing's own text against phrasing common in exploitative
+  postings (unpaid "assessments," tight deadlines, reply-all instructions,
+  vague company info, rejection threats), and shows the exact quoted
+  phrase that triggered each flag.
 
-### Signal Score (`lib/signal.ts`)
+### Accounts
 
-A transparent 0–100 quality score computed **only from data already on
-the listing** — no external calls, no model, nothing invisible. Seven
-checks, each independently visible on the listing page with the exact
-reason it passed or failed:
+Email/password and Google sign-in via Supabase Auth. Every account is
+either a **candidate** or an **employer**, chosen at signup (or via a
+one-time onboarding step for Google sign-ins, which don't carry that
+choice through the OAuth redirect).
 
-| Check | Points | What it looks for |
-|---|---|---|
-| Salary disclosed | 15 | A min and max are both provided |
-| Salary range is realistic | 10 | Within a plausible full-time band and not absurdly wide |
-| 3+ concrete responsibilities | 15 | At least 3 responsibility bullets |
-| 3+ concrete requirements | 15 | At least 3 requirement bullets |
-| Substantive description | 15 | 40+ words in the description |
-| Posted recently | 15 | Within the last 30 days |
-| Tags are specific, not buzzwords | 15 | Tags aren't generic filler ("rockstar," "fast-paced," "self-starter," etc.) |
+### Employer dashboard (`/employer`)
 
-Scores ≥75 are **Strong Signal**, ≥45 are **Moderate Signal**, below
-that is **Weak Signal**. The full checklist — pass/fail, points, and
-the exact value that produced the result — is shown on every listing's
-detail page, never just the number.
+- **Company profile** — one per account; required before posting a role.
+- **Post / edit / delete roles**, publish or save as a draft.
+- **My Jobs** — every role you've posted, with status toggling.
+- **Applicants per role** — see who applied, read their optional cover
+  letter, and move them through applied → reviewing → accepted/rejected.
+- **Home** — real counts (published roles, drafts, total applications).
+  No charts (see cuts above).
 
-### Red-flag detector (`lib/redflags.ts`)
+### Candidate dashboard (`/dashboard`)
 
-The one feature chosen beyond the core list, picked because it's
-useful to an actual job seeker, not just a portfolio flourish, and
-because it's honest about being a heuristic in the same way the Signal
-Score is. It pattern-matches a listing's own text against phrasing
-commonly reported in exploitative postings:
+- **Saved roles** and **Applied roles** (with real, employer-set status).
+- **Resume** — plain-text resume, used by both AI features below.
+- **AI Resume Review + Match Score** — a real Google Gemini (`gemini-2.5-flash`) call
+  given your resume text and one job's description. Returns an ATS score,
+  a match score for that specific job, missing skills, strengths, and
+  weaknesses. On failure, shows a real error — never a fabricated
+  fallback score.
+- **AI Cover Letter** — same model, generates an editable, copyable draft
+  grounded in your resume and the selected job.
+- **Apply flow** — an optional cover letter, submitted as a real
+  `applications` row tied to your account.
 
-- Unpaid work reframed as an "assessment" or "trial task"
-- Unusually tight deadlines ("within 24 hours," "by tonight")
-- "Reply-all" mass-instruction patterns
-- Vague, unverifiable company info ("confidential client," "leading
-  company in the industry")
-- Threat-style rejection language ("any broken link = instant
-  rejection")
-- Requests for candidates to pay or buy equipment
-- Unpaid roles with no stated compensation
-
-Every match is shown with the **exact quoted phrase** that triggered
-it — this is pattern matching against the listing's own words, not a
-judgment about the employer, and the evidence line lets you check that
-for yourself instead of trusting a score.
-
----
-
-## Design
-
-The visual direction is **editorial / ledger**: paper-white background,
-hairline rules, a serif display face for titles, and a monospace face
-for anything that reads like a ledger figure — scores, salaries, tags,
-dates. The goal was something that reads like a well-typeset classifieds
-page rather than an app dashboard, with a single navy accent instead of
-a full UI-chrome color palette.
-
----
-
-## Tech
+## Architecture
 
 - **Next.js 16 (App Router) + TypeScript + Tailwind v4**
-- **No backend** — `localStorage` only, via a small pub-sub store in
-  `lib/storage.ts` read through React's `useSyncExternalStore`, so the
-  UI stays in sync across tabs/components without manual state-syncing
-  effects or SSR hydration mismatches
-- Each `lib/*.ts` file has exactly one job: `signal.ts` scores,
-  `redflags.ts` detects, `storage.ts` reads/writes local data,
-  `filters.ts` filters, `validate.ts` validates. Components render;
-  they don't fetch, filter, or persist.
+- **Supabase**: Postgres (schema in `supabase/migrations/0001_init.sql`)
+  + Auth (email/password, Google OAuth). Every table has row-level
+  security scoped to `auth.uid()` — the app never uses or needs the
+  `service_role` key.
+- **Google Gemini** (`gemini-2.5-flash`), called only from server routes
+  (`app/api/ai/*`) with `GEMINI_API_KEY` as a server-only env var, never
+  exposed to the browser. Both routes require an authenticated session and
+  cap input length.
+- `lib/queries/*` — one file per table/concern (jobs, companies,
+  applications, bookmarks, profiles), each exporting plain functions that
+  take a Supabase client and return typed data. Called from Server
+  Components, Server Actions, and Route Handlers alike.
+- `app/*/actions.ts` — Server Actions for every mutation (auth, job
+  posting, applying, bookmarking, profile/resume/company edits). Next.js
+  renders fresh server output after each one, so there's no client-side
+  session-sync code to maintain.
+- `lib/signal.ts`, `lib/redflags.ts`, `lib/filters.ts`, `lib/validate.ts`
+  carried over from the original build essentially untouched — they were
+  already pure functions with no knowledge of storage, which is exactly
+  why they didn't need to change when the storage layer did.
+
+## Setup
+
+### 1. Supabase project
+
+1. Create a project at [supabase.com/dashboard](https://supabase.com/dashboard).
+2. In the SQL Editor, run `supabase/migrations/0001_init.sql` once.
+3. In **Authentication → Sign In / Providers → Email**, turn off "Confirm
+   email" (a deliberate scope decision for a demo project — real accounts
+   without a verification-loop step to test manually).
+4. Copy **Project URL** and the **anon/public** key from
+   **Project Settings → API**.
+
+### 2. Google OAuth (optional — email/password works fully without it)
+
+1. In [Google Cloud Console](https://console.cloud.google.com), create an
+   OAuth consent screen and an OAuth Client ID (Web application).
+2. Authorized redirect URI: `https://<your-project-ref>.supabase.co/auth/v1/callback`.
+3. In Supabase **Authentication → Providers → Google**, paste the Client
+   ID and secret, enable the provider.
+4. In Supabase **Authentication → URL Configuration**, add your app's
+   origin(s) (`http://localhost:3000` and your Vercel URL) to Redirect
+   URLs.
+
+### 3. Environment variables
+
+Copy `.env.local.example` to `.env.local` and fill in:
+
+```
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+GEMINI_API_KEY=
+```
+
+Set the same three in Vercel (**Project Settings → Environment
+Variables**) before deploying.
 
 ## Running locally
 
@@ -155,8 +164,6 @@ a full UI-chrome color palette.
 npm install
 npm run dev
 ```
-
-Then open [http://localhost:3000](http://localhost:3000).
 
 ```bash
 npm run lint       # ESLint
@@ -167,17 +174,13 @@ npm run build      # production build
 ## CI/CD
 
 - **CI** (`.github/workflows/ci.yml`): every push and PR to `main` runs
-  lint → typecheck → build on GitHub Actions.
-- **Deploy**: Vercel is connected directly to the GitHub repo, so a
-  push to `main` (after CI passes) triggers a production deploy. That
-  alone satisfies "deploy via CI/CD" without adding a second,
-  redundant deploy-hook Action.
+  lint → typecheck → build.
+- **Deploy**: Vercel is connected directly to the GitHub repo; a push to
+  `main` (after CI passes) triggers a production deploy.
 
-## What's intentionally not here
+## Design
 
-No auth, no database, no server-rendered per-user data, no AI-branded
-features that aren't inspectable heuristics. Each of those is a real
-feature this app could grow into — they were left out because a small
-thing that fully works beats a big thing that might not, especially
-under a 3-day deadline where every added moving part is a new way to
-fail "all links must be fully functional."
+Editorial/ledger direction: paper-white background, hairline rules, a
+serif display face for titles, monospace for anything that reads like a
+ledger figure — scores, salaries, tags, dates. One navy accent instead of
+a full UI-chrome palette.

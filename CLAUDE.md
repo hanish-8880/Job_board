@@ -4,6 +4,27 @@ Context for Claude (in VS Code / Claude Code) working on this repo. This is
 direction and scope, not implementation — the how is left to you and Claude
 Code.
 
+## Update: scope pivot (kept for history, not erased)
+
+Everything below this note describes the original decision to ship a
+no-backend, localStorage-only build, and the reasoning behind it. That
+version was fully built, tested, committed, and pushed. The user was then
+shown the competing full-stack plan referenced below (from another AI) and,
+after being explicitly told the added deploy risk this would introduce,
+chose to build it anyway.
+
+The larger version — Supabase Postgres + Auth (email/password and Google),
+candidate/employer dashboards, real job CRUD, and two real Google Gemini-backed
+features (Resume Review + Match Score, Cover Letter Generator) — was then
+built on top of the same underlying app. The engineering discipline didn't
+change: no fake data, no fake AI, real features fully working over more
+features half-working. See the README for what that version cuts from the
+larger plan and why (analytics/messages/PDF parsing/legal pages), and for
+the full feature list as actually shipped.
+
+The reasoning below is left intact because it's still correct reasoning —
+it was overridden by an explicit, informed choice, not disproven.
+
 ## The situation
 
 This is a 3-day take-home assessment for a Software Engineer role. The brief:
