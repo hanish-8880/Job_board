@@ -1,27 +1,23 @@
-export interface JobDraft {
+export interface JobPostingDraft {
   title: string;
-  company: string;
   location: string;
   salaryMin: string;
   salaryMax: string;
   description: string;
 }
 
-export type JobDraftErrors = Partial<Record<keyof JobDraft, string>>;
+export type JobPostingErrors = Partial<Record<keyof JobPostingDraft, string>>;
 
 /**
- * Client-side validation for the Post a Role form. Every message names the
- * exact fix, not just that something's wrong — see CLAUDE.md's UX section.
+ * Client-side validation for the employer Post a Role form. Every message
+ * names the exact fix, not just that something's wrong — see CLAUDE.md's
+ * UX section.
  */
-export function validateJobDraft(draft: JobDraft): JobDraftErrors {
-  const errors: JobDraftErrors = {};
+export function validateJobPosting(draft: JobPostingDraft): JobPostingErrors {
+  const errors: JobPostingErrors = {};
 
   if (!draft.title.trim()) {
     errors.title = "Enter a job title.";
-  }
-
-  if (!draft.company.trim()) {
-    errors.company = "Enter a company name.";
   }
 
   if (!draft.location.trim()) {
@@ -61,6 +57,87 @@ export function validateJobDraft(draft: JobDraft): JobDraftErrors {
         errors.salaryMax = "Maximum must be greater than the minimum.";
       }
     }
+  }
+
+  return errors;
+}
+
+export interface SignupDraft {
+  fullName: string;
+  email: string;
+  password: string;
+  role: "candidate" | "employer" | "";
+}
+
+export type SignupErrors = Partial<Record<keyof SignupDraft, string>>;
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+export function validateSignup(draft: SignupDraft): SignupErrors {
+  const errors: SignupErrors = {};
+
+  if (!draft.fullName.trim()) {
+    errors.fullName = "Enter your name.";
+  }
+
+  if (!draft.email.trim()) {
+    errors.email = "Enter your email address.";
+  } else if (!EMAIL_PATTERN.test(draft.email.trim())) {
+    errors.email = "Enter a valid email address.";
+  }
+
+  if (!draft.password) {
+    errors.password = "Enter a password.";
+  } else if (draft.password.length < 8) {
+    errors.password = "Password must be at least 8 characters.";
+  }
+
+  if (!draft.role) {
+    errors.role = "Choose whether you're hiring or job hunting.";
+  }
+
+  return errors;
+}
+
+export interface LoginDraft {
+  email: string;
+  password: string;
+}
+
+export type LoginErrors = Partial<Record<keyof LoginDraft, string>>;
+
+export function validateLogin(draft: LoginDraft): LoginErrors {
+  const errors: LoginErrors = {};
+
+  if (!draft.email.trim()) {
+    errors.email = "Enter your email address.";
+  }
+
+  if (!draft.password) {
+    errors.password = "Enter your password.";
+  }
+
+  return errors;
+}
+
+export interface CompanyDraft {
+  name: string;
+  website: string;
+  description: string;
+}
+
+export type CompanyErrors = Partial<Record<keyof CompanyDraft, string>>;
+
+export function validateCompany(draft: CompanyDraft): CompanyErrors {
+  const errors: CompanyErrors = {};
+
+  if (!draft.name.trim()) {
+    errors.name = "Enter a company name.";
+  }
+
+  const website = draft.website.trim();
+  if (website && !/^https?:\/\/.+\..+/.test(website)) {
+    errors.website = "Enter a full URL, e.g. https://example.com.";
   }
 
   return errors;
