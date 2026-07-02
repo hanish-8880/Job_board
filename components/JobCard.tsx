@@ -6,7 +6,15 @@ import SignalBadge from "./SignalBadge";
 import RedFlagTag from "./RedFlagTag";
 import SaveButton from "./SaveButton";
 
-export default function JobCard({ job }: { job: Job }) {
+export default function JobCard({
+  job,
+  initialSaved,
+  isLoggedIn,
+}: {
+  job: Job;
+  initialSaved: boolean;
+  isLoggedIn: boolean;
+}) {
   const signal = computeSignal(job);
   const flags = detectRedFlags(job);
   const salaryLabel =
@@ -28,7 +36,12 @@ export default function JobCard({ job }: { job: Job }) {
             {job.company} · {job.location}
           </p>
         </div>
-        <SaveButton jobId={job.id} className="relative z-10" />
+        <SaveButton
+          jobId={job.id}
+          initialSaved={initialSaved}
+          isLoggedIn={isLoggedIn}
+          className="relative z-10"
+        />
       </div>
 
       <div className="mt-3 flex flex-wrap items-center gap-2">

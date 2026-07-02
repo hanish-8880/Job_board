@@ -1,14 +1,8 @@
-"use client";
-
-import { useMemo, useSyncExternalStore } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
-import {
-  EMPTY_JOBS,
-  getPostedJobsSnapshot,
-  mergeWithSeedJobs,
-  subscribePostedJobs,
-} from "@/lib/storage";
+import { createClient } from "@/lib/supabase/server";
+import { getJobById } from "@/lib/queries/jobs";
+import { isBookmarked } from "@/lib/queries/bookmarks";
+import { hasApplied } from "@/lib/queries/applications";
 import { computeSignal } from "@/lib/signal";
 import { detectRedFlags } from "@/lib/redflags";
 import SignalBadge from "@/components/SignalBadge";
@@ -18,22 +12,21 @@ import SaveButton from "@/components/SaveButton";
 import ApplyPanel from "@/components/ApplyPanel";
 import EmptyState from "@/components/EmptyState";
 
-export default function JobDetailPage() {
-  const params = useParams<{ id: string }>();
-  const postedJobs = useSyncExternalStore(
-    subscribePostedJobs,
-    getPostedJobsSnapshot,
-    () => EMPTY_JOBS
-  );
-  const allJobs = useMemo(() => mergeWithSeedJobs(postedJobs), [postedJobs]);
-  const job = allJobs.find((candidate) => candidate.id === params.id);
+export default async function JobDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const supabase = await createClient();
+  const job = await getJobById(supabase, id);
 
   if (!job) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
         <EmptyState
           title="Listing not found"
-          message="This role may have been removed, or the link is incorrect."
+          message="This role may have been removed, unpublished, or the link is incorrect."
         />
         <div className="mt-6">
           <Link
@@ -46,6 +39,16 @@ export default function JobDetailPage() {
       </div>
     );
   }
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const [saved, applied] = user
+    ? await Promise.all([
+        isBookmarked(supabase, job.id, user.id),
+        hasApplied(supabase, job.id, user.id),
+      ])
+    : [false, false];
 
   const signal = computeSignal(job);
   const flags = detectRedFlags(job);
@@ -66,14 +69,17 @@ export default function JobDetailPage() {
       <div className="mt-4 border-b border-rule pb-6">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h1 className="font-serif text-3xl font-semibold text-ink">
-              {job.title}
-            </h1>
+            {job.status === "draft" && (
+              <p className="mb-1 font-mono text-[11px] uppercase tracking-[0.1em] text-moderate">
+                Draft — only visible to you
+              </p>
+            )}
+            <h1 className="font-serif text-3xl font-semibold text-ink">{job.title}</h1>
             <p className="mt-1 text-sm text-ink-soft">
               {job.company} · {job.location}
             </p>
           </div>
-          <SaveButton jobId={job.id} />
+          <SaveButton jobId={job.id} initialSaved={saved} isLoggedIn={!!user} />
         </div>
 
         <div className="mt-4 flex flex-wrap items-center gap-2">
@@ -83,9 +89,7 @@ export default function JobDetailPage() {
           </span>
         </div>
 
-        <p className="mt-3 font-mono text-sm tabular-nums text-ink-soft">
-          {salaryLabel}
-        </p>
+        <p className="mt-3 font-mono text-sm tabular-nums text-ink-soft">{salaryLabel}</p>
 
         <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1">
           {job.tags.map((tag) => (
@@ -96,7 +100,12 @@ export default function JobDetailPage() {
         </div>
 
         <div className="mt-5">
-          <ApplyPanel jobId={job.id} company={job.company} />
+          <ApplyPanel
+            jobId={job.id}
+            company={job.company}
+            isLoggedIn={!!user}
+            initialApplied={applied}
+          />
         </div>
       </div>
 
@@ -114,9 +123,7 @@ export default function JobDetailPage() {
       </section>
 
       <section className="mt-6">
-        <h2 className="font-serif text-lg font-semibold text-ink">
-          Responsibilities
-        </h2>
+        <h2 className="font-serif text-lg font-semibold text-ink">Responsibilities</h2>
         <ul className="mt-2 divide-y divide-rule border-y border-rule">
           {job.responsibilities.map((item) => (
             <li key={item} className="py-2 text-sm text-ink-soft">
