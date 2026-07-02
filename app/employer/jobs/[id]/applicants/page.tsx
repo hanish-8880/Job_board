@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getJobById } from "@/lib/queries/jobs";
 import { getApplicantsForJob } from "@/lib/queries/applications";
@@ -17,7 +18,7 @@ export default async function ApplicantsPage({
   if (!job) {
     return (
       <div>
-        <h1 className="font-serif text-3xl font-semibold text-ink">Applicants</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-ink sm:text-3xl">Applicants</h1>
         <div className="mt-6">
           <EmptyState title="Listing not found" message="This role may have been deleted." />
         </div>
@@ -29,11 +30,14 @@ export default async function ApplicantsPage({
 
   return (
     <div>
-      <div className="border-b border-rule pb-6">
-        <h1 className="font-serif text-3xl font-semibold text-ink">Applicants</h1>
+      <div className="border-b border-border pb-6">
+        <h1 className="text-2xl font-bold tracking-tight text-ink sm:text-3xl">Applicants</h1>
         <p className="mt-2 text-sm text-ink-soft">
           For{" "}
-          <Link href={`/jobs/${job.id}`} className="text-navy underline">
+          <Link
+            href={`/jobs/${job.id}`}
+            className="font-medium text-primary underline underline-offset-2"
+          >
             {job.title}
           </Link>
         </p>
@@ -41,6 +45,7 @@ export default async function ApplicantsPage({
       <div className="mt-6 flex flex-col gap-3">
         {applicants.length === 0 ? (
           <EmptyState
+            icon={Users}
             title="No applicants yet"
             message="Applications will show up here as candidates apply."
           />

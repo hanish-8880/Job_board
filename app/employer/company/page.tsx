@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { getCompanyByOwner } from "@/lib/queries/companies";
 import CompanyForm from "@/components/CompanyForm";
+import PageHeader from "@/components/ui/PageHeader";
 
 export default async function CompanyPage() {
   const supabase = await createClient();
@@ -11,13 +12,10 @@ export default async function CompanyPage() {
 
   return (
     <div>
-      <div className="border-b border-rule pb-6">
-        <h1 className="font-serif text-3xl font-semibold text-ink">Company profile</h1>
-        <p className="mt-2 text-sm text-ink-soft">
-          Candidates see this name and description on every role you post.
-          One company per account.
-        </p>
-      </div>
+      <PageHeader
+        title="Company profile"
+        description="Candidates see this name and description on every role you post. One company per account."
+      />
       <div className="mt-6">
         <CompanyForm
           initialValues={

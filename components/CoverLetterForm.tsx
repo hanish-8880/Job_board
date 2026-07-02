@@ -1,7 +1,10 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { inputClass, labelClass, submitClass } from "./formStyles";
+import { Check, Copy, Loader2, Mail } from "lucide-react";
+import { Select, Textarea, labelClass } from "./ui/fields";
+import Button from "./ui/Button";
+import Card from "./ui/Card";
 
 export default function CoverLetterForm({
   jobs,
@@ -46,46 +49,49 @@ export default function CoverLetterForm({
 
   return (
     <div className="max-w-2xl">
-      <form onSubmit={handleSubmit} className="flex flex-wrap items-end gap-3">
-        <div className="min-w-[240px] flex-1">
-          <label className={labelClass} htmlFor="jobId">
-            Role
-          </label>
-          <select
-            id="jobId"
-            value={jobId}
-            onChange={(event) => setJobId(event.target.value)}
-            className={`${inputClass} mt-1`}
-          >
-            {jobs.map((job) => (
-              <option key={job.id} value={job.id}>
-                {job.title} — {job.company}
-              </option>
-            ))}
-          </select>
-        </div>
-        <button type="submit" disabled={loading} className={submitClass}>
-          {loading ? "Generating…" : "Generate draft"}
-        </button>
-      </form>
+      <Card className="p-4">
+        <form onSubmit={handleSubmit} className="flex flex-wrap items-end gap-3">
+          <div className="min-w-[240px] flex-1">
+            <label className={labelClass} htmlFor="jobId">
+              Role
+            </label>
+            <Select
+              id="jobId"
+              value={jobId}
+              onChange={(event) => setJobId(event.target.value)}
+              className="mt-1.5"
+            >
+              {jobs.map((job) => (
+                <option key={job.id} value={job.id}>
+                  {job.title} — {job.company}
+                </option>
+              ))}
+            </Select>
+          </div>
+          <Button type="submit" disabled={loading}>
+            {loading ? (
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+            ) : (
+              <Mail className="h-4 w-4" aria-hidden />
+            )}
+            {loading ? "Generating…" : "Generate draft"}
+          </Button>
+        </form>
+      </Card>
 
       {error && <p className="mt-4 text-sm text-weak">{error}</p>}
 
       {letter && (
         <div className="mt-6">
-          <textarea
+          <Textarea
             value={letter}
             onChange={(event) => setLetter(event.target.value)}
             rows={14}
-            className={inputClass}
           />
-          <button
-            type="button"
-            onClick={handleCopy}
-            className="mt-2 rounded-sm border border-rule-strong px-4 py-2 font-mono text-xs uppercase tracking-[0.08em] text-ink-soft transition-colors hover:border-navy hover:text-navy"
-          >
+          <Button type="button" variant="secondary" size="sm" className="mt-2" onClick={handleCopy}>
+            {copied ? <Check className="h-3.5 w-3.5" aria-hidden /> : <Copy className="h-3.5 w-3.5" aria-hidden />}
             {copied ? "Copied" : "Copy to clipboard"}
-          </button>
+          </Button>
         </div>
       )}
     </div>

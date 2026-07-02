@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getJobById } from "@/lib/queries/jobs";
 import JobForm from "@/components/JobForm";
 import EmptyState from "@/components/EmptyState";
+import PageHeader from "@/components/ui/PageHeader";
 
 export default async function EditJobPage({
   params,
@@ -15,7 +16,7 @@ export default async function EditJobPage({
   if (!job) {
     return (
       <div>
-        <h1 className="font-serif text-3xl font-semibold text-ink">Edit role</h1>
+        <PageHeader title="Edit role" />
         <div className="mt-6">
           <EmptyState title="Listing not found" message="This role may have been deleted." />
         </div>
@@ -25,10 +26,7 @@ export default async function EditJobPage({
 
   return (
     <div>
-      <div className="border-b border-rule pb-6">
-        <h1 className="font-serif text-3xl font-semibold text-ink">Edit role</h1>
-        <p className="mt-2 text-sm text-ink-soft">{job.title}</p>
-      </div>
+      <PageHeader title="Edit role" description={job.title} />
       <div className="mt-6">
         <JobForm job={job} />
       </div>

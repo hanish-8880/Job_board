@@ -1,10 +1,12 @@
 import Link from "next/link";
+import { Briefcase, FileEdit, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getCompanyByOwner } from "@/lib/queries/companies";
 import { getJobsForCompany } from "@/lib/queries/jobs";
 import { getApplicationCountForCompany } from "@/lib/queries/applications";
 import EmptyState from "@/components/EmptyState";
 import StatTile from "@/components/StatTile";
+import PageHeader from "@/components/ui/PageHeader";
 
 export default async function EmployerHomePage() {
   const supabase = await createClient();
@@ -16,7 +18,7 @@ export default async function EmployerHomePage() {
   if (!company) {
     return (
       <div>
-        <h1 className="font-serif text-3xl font-semibold text-ink">Dashboard</h1>
+        <PageHeader title="Dashboard" />
         <div className="mt-6">
           <EmptyState
             title="No company yet"
@@ -25,7 +27,7 @@ export default async function EmployerHomePage() {
         </div>
         <Link
           href="/employer/company"
-          className="mt-4 inline-block font-mono text-xs uppercase tracking-[0.1em] text-navy underline"
+          className="mt-4 inline-block text-sm font-medium text-primary underline underline-offset-2"
         >
           Set up company →
         </Link>
@@ -41,17 +43,14 @@ export default async function EmployerHomePage() {
 
   return (
     <div>
-      <div className="border-b border-rule pb-6">
-        <h1 className="font-serif text-3xl font-semibold text-ink">{company.name}</h1>
-        <p className="mt-2 text-sm text-ink-soft">
-          Real counts from your own listings — no charts here, since a
-          brand-new board has no traffic history yet to chart honestly.
-        </p>
-      </div>
+      <PageHeader
+        title={company.name}
+        description="Real counts from your own listings — no charts here, since a brand-new board has no traffic history yet to chart honestly."
+      />
       <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <StatTile label="Published roles" value={publishedCount} />
-        <StatTile label="Draft roles" value={jobs.length - publishedCount} />
-        <StatTile label="Total applications" value={applicationCount} />
+        <StatTile icon={Briefcase} label="Published roles" value={publishedCount} />
+        <StatTile icon={FileEdit} label="Draft roles" value={jobs.length - publishedCount} />
+        <StatTile icon={Users} label="Total applications" value={applicationCount} />
       </div>
     </div>
   );

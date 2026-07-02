@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { useState, useTransition } from "react";
+import { Eye, EyeOff, Pencil, Trash2, Users } from "lucide-react";
 import type { Job, JobStatus } from "@/lib/types";
 import { deleteJobAction, toggleJobStatusAction } from "@/app/employer/jobs/actions";
-
-const actionButtonClass =
-  "rounded-sm border border-rule-strong px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.08em] text-ink-soft transition-colors hover:border-navy hover:text-navy disabled:opacity-60";
+import Card from "./ui/Card";
+import Badge from "./ui/Badge";
+import { buttonVariants } from "./ui/Button";
 
 export default function EmployerJobRow({ job }: { job: Job }) {
   const [status, setStatus] = useState<JobStatus>(job.status);
@@ -28,23 +29,44 @@ export default function EmployerJobRow({ job }: { job: Job }) {
   }
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 border border-rule bg-paper-raised px-4 py-3">
+    <Card className="flex flex-wrap items-center justify-between gap-3 px-4 py-3.5">
       <div className="min-w-0">
-        <Link href={`/jobs/${job.id}`} className="font-serif text-lg font-semibold text-ink hover:underline">
-          {job.title}
-        </Link>
-        <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-ink-faint">
-          {status} · {job.mode} · {job.level}
+        <div className="flex items-center gap-2">
+          <Link href={`/jobs/${job.id}`} className="text-base font-bold text-ink hover:underline">
+            {job.title}
+          </Link>
+          <Badge variant={status === "published" ? "strong" : "neutral"}>{status}</Badge>
+        </div>
+        <p className="mt-0.5 text-sm text-ink-soft">
+          {job.mode} · {job.level}
         </p>
       </div>
       <div className="flex flex-wrap gap-2">
-        <Link href={`/employer/jobs/${job.id}/applicants`} className={actionButtonClass}>
+        <Link
+          href={`/employer/jobs/${job.id}/applicants`}
+          className={buttonVariants({ variant: "secondary", size: "sm" })}
+        >
+          <Users className="h-3.5 w-3.5" aria-hidden />
           Applicants
         </Link>
-        <Link href={`/employer/jobs/${job.id}/edit`} className={actionButtonClass}>
+        <Link
+          href={`/employer/jobs/${job.id}/edit`}
+          className={buttonVariants({ variant: "secondary", size: "sm" })}
+        >
+          <Pencil className="h-3.5 w-3.5" aria-hidden />
           Edit
         </Link>
-        <button type="button" onClick={toggleStatus} disabled={isPending} className={actionButtonClass}>
+        <button
+          type="button"
+          onClick={toggleStatus}
+          disabled={isPending}
+          className={buttonVariants({ variant: "secondary", size: "sm" })}
+        >
+          {status === "published" ? (
+            <EyeOff className="h-3.5 w-3.5" aria-hidden />
+          ) : (
+            <Eye className="h-3.5 w-3.5" aria-hidden />
+          )}
           {status === "published" ? "Unpublish" : "Publish"}
         </button>
         {confirmingDelete ? (
@@ -53,14 +75,14 @@ export default function EmployerJobRow({ job }: { job: Job }) {
               type="button"
               onClick={handleDelete}
               disabled={isPending}
-              className="rounded-sm border border-weak px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.08em] text-weak disabled:opacity-60"
+              className={buttonVariants({ variant: "danger", size: "sm" })}
             >
               Confirm delete
             </button>
             <button
               type="button"
               onClick={() => setConfirmingDelete(false)}
-              className={actionButtonClass}
+              className={buttonVariants({ variant: "secondary", size: "sm" })}
             >
               Cancel
             </button>
@@ -69,12 +91,13 @@ export default function EmployerJobRow({ job }: { job: Job }) {
           <button
             type="button"
             onClick={() => setConfirmingDelete(true)}
-            className="rounded-sm border border-rule-strong px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.08em] text-ink-soft transition-colors hover:border-weak hover:text-weak"
+            className={buttonVariants({ variant: "secondary", size: "sm" })}
           >
+            <Trash2 className="h-3.5 w-3.5" aria-hidden />
             Delete
           </button>
         )}
       </div>
-    </div>
+    </Card>
   );
 }

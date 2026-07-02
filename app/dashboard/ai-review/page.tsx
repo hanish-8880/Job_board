@@ -1,9 +1,11 @@
 import Link from "next/link";
+import { FileText } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getPublishedJobs } from "@/lib/queries/jobs";
 import { getProfile } from "@/lib/queries/profiles";
 import AIReviewForm from "@/components/AIReviewForm";
 import EmptyState from "@/components/EmptyState";
+import PageHeader from "@/components/ui/PageHeader";
 
 export default async function AIReviewPage() {
   const supabase = await createClient();
@@ -20,13 +22,13 @@ export default async function AIReviewPage() {
   if (!profile?.resumeText) {
     return (
       <div>
-        <h1 className="font-serif text-3xl font-semibold text-ink">AI Resume Review</h1>
+        <PageHeader title="AI Resume Review" />
         <div className="mt-6">
-          <EmptyState title="No resume yet" message="Add your resume text first." />
+          <EmptyState icon={FileText} title="No resume yet" message="Add your resume text first." />
         </div>
         <Link
           href="/dashboard/resume"
-          className="mt-4 inline-block font-mono text-xs uppercase tracking-[0.1em] text-navy underline"
+          className="mt-4 inline-block text-sm font-medium text-primary underline underline-offset-2"
         >
           Add resume →
         </Link>
@@ -36,14 +38,10 @@ export default async function AIReviewPage() {
 
   return (
     <div>
-      <div className="border-b border-rule pb-6">
-        <h1 className="font-serif text-3xl font-semibold text-ink">AI Resume Review</h1>
-        <p className="mt-2 text-sm text-ink-soft">
-          Pick a role. This calls Google&apos;s Gemini 2.5 Flash in real time with
-          your resume text and that job&apos;s description — the score is
-          whatever the model actually returns, not a fallback.
-        </p>
-      </div>
+      <PageHeader
+        title="AI Resume Review"
+        description="Pick a role. This calls Google's Gemini 2.5 Flash in real time with your resume text and that job's description — the score is whatever the model actually returns, not a fallback."
+      />
       <div className="mt-6">
         <AIReviewForm jobs={jobs.map((job) => ({ id: job.id, title: job.title, company: job.company }))} />
       </div>

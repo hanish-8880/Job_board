@@ -1,9 +1,11 @@
 import Link from "next/link";
+import { FileText } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getPublishedJobs } from "@/lib/queries/jobs";
 import { getProfile } from "@/lib/queries/profiles";
 import CoverLetterForm from "@/components/CoverLetterForm";
 import EmptyState from "@/components/EmptyState";
+import PageHeader from "@/components/ui/PageHeader";
 
 export default async function CoverLetterPage() {
   const supabase = await createClient();
@@ -20,13 +22,13 @@ export default async function CoverLetterPage() {
   if (!profile?.resumeText) {
     return (
       <div>
-        <h1 className="font-serif text-3xl font-semibold text-ink">AI Cover Letter</h1>
+        <PageHeader title="AI Cover Letter" />
         <div className="mt-6">
-          <EmptyState title="No resume yet" message="Add your resume text first." />
+          <EmptyState icon={FileText} title="No resume yet" message="Add your resume text first." />
         </div>
         <Link
           href="/dashboard/resume"
-          className="mt-4 inline-block font-mono text-xs uppercase tracking-[0.1em] text-navy underline"
+          className="mt-4 inline-block text-sm font-medium text-primary underline underline-offset-2"
         >
           Add resume →
         </Link>
@@ -36,14 +38,10 @@ export default async function CoverLetterPage() {
 
   return (
     <div>
-      <div className="border-b border-rule pb-6">
-        <h1 className="font-serif text-3xl font-semibold text-ink">AI Cover Letter</h1>
-        <p className="mt-2 text-sm text-ink-soft">
-          Generates a draft with Google&apos;s Gemini 2.5 Flash from your resume
-          text and the selected job. Edit before using — this is a starting
-          point, not a final draft.
-        </p>
-      </div>
+      <PageHeader
+        title="AI Cover Letter"
+        description="Generates a draft with Google's Gemini 2.5 Flash from your resume text and the selected job. Edit before using — this is a starting point, not a final draft."
+      />
       <div className="mt-6">
         <CoverLetterForm
           jobs={jobs.map((job) => ({ id: job.id, title: job.title, company: job.company }))}

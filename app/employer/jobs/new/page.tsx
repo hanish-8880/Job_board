@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getCompanyByOwner } from "@/lib/queries/companies";
 import JobForm from "@/components/JobForm";
 import EmptyState from "@/components/EmptyState";
+import PageHeader from "@/components/ui/PageHeader";
 
 export default async function NewJobPage() {
   const supabase = await createClient();
@@ -14,7 +15,7 @@ export default async function NewJobPage() {
   if (!company) {
     return (
       <div>
-        <h1 className="font-serif text-3xl font-semibold text-ink">Post a role</h1>
+        <PageHeader title="Post a role" />
         <div className="mt-6">
           <EmptyState
             title="No company yet"
@@ -23,7 +24,7 @@ export default async function NewJobPage() {
         </div>
         <Link
           href="/employer/company"
-          className="mt-4 inline-block font-mono text-xs uppercase tracking-[0.1em] text-navy underline"
+          className="mt-4 inline-block text-sm font-medium text-primary underline underline-offset-2"
         >
           Set up company →
         </Link>
@@ -33,13 +34,10 @@ export default async function NewJobPage() {
 
   return (
     <div>
-      <div className="border-b border-rule pb-6">
-        <h1 className="font-serif text-3xl font-semibold text-ink">Post a role</h1>
-        <p className="mt-2 text-sm text-ink-soft">
-          Publishes immediately and appears on Browse for every visitor,
-          unless you save it as a draft.
-        </p>
-      </div>
+      <PageHeader
+        title="Post a role"
+        description="Publishes immediately and appears on Browse for every visitor, unless you save it as a draft."
+      />
       <div className="mt-6">
         <JobForm />
       </div>

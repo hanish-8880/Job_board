@@ -1,7 +1,9 @@
+import { Bookmark, FileText } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getBookmarkedJobIds } from "@/lib/queries/bookmarks";
 import { getApplicationsForCandidate } from "@/lib/queries/applications";
 import StatTile from "@/components/StatTile";
+import PageHeader from "@/components/ui/PageHeader";
 
 export default async function DashboardHomePage() {
   const supabase = await createClient();
@@ -17,13 +19,10 @@ export default async function DashboardHomePage() {
 
   return (
     <div>
-      <div className="border-b border-rule pb-6">
-        <h1 className="font-serif text-3xl font-semibold text-ink">Dashboard</h1>
-        <p className="mt-2 text-sm text-ink-soft">Your job search, in one place.</p>
-      </div>
+      <PageHeader title="Dashboard" description="Your job search, in one place." />
       <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <StatTile label="Saved roles" value={bookmarkedIds.length} />
-        <StatTile label="Applications submitted" value={applications.length} />
+        <StatTile icon={Bookmark} label="Saved roles" value={bookmarkedIds.length} />
+        <StatTile icon={FileText} label="Applications submitted" value={applications.length} />
       </div>
     </div>
   );
