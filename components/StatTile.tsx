@@ -1,8 +1,20 @@
-export default function StatTile({ label, value }: { label: string; value: number }) {
+import type { LucideIcon } from "lucide-react";
+import Card from "./ui/Card";
+
+export default function StatTile({
+  label,
+  value,
+  icon: Icon,
+}: {
+  label: string;
+  value: number;
+  icon?: LucideIcon;
+}) {
   return (
-    <div className="border border-rule bg-paper-raised px-4 py-4">
-      <p className="font-mono text-xs uppercase tracking-[0.08em] text-ink-faint">{label}</p>
-      <p className="mt-1 font-serif text-3xl font-semibold tabular-nums text-ink">{value}</p>
-    </div>
+    <Card className="px-5 py-4">
+      {Icon && <Icon className="h-5 w-5 text-primary" aria-hidden />}
+      <p className="mt-2 text-3xl font-extrabold tabular-nums text-ink">{value}</p>
+      <p className="text-sm text-ink-soft">{label}</p>
+    </Card>
   );
 }
