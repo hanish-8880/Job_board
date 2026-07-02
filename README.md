@@ -180,7 +180,18 @@ npm run build      # production build
 
 ## Design
 
-Editorial/ledger direction: paper-white background, hairline rules, a
-serif display face for titles, monospace for anything that reads like a
-ledger figure — scores, salaries, tags, dates. One navy accent instead of
-a full UI-chrome palette.
+Synthesizes structural cues from several job platforms (LinkedIn's card
+density and clean nav, Wellfound's whitespace and polish, Indeed's
+search/filter layout, Greenhouse's typography clarity) rather than
+cloning any one of them: white surfaces on a light-gray background,
+rounded cards with soft shadows, an indigo accent chosen specifically
+to avoid reading as a LinkedIn clone, Inter throughout, and
+`lucide-react` icons everywhere a label alone would be ambiguous.
+`framer-motion` adds restrained polish — card hover-lift, fade/stagger
+entrances — that respects `prefers-reduced-motion` and never gates
+interactivity.
+
+The home page's hero (headline, CTA row, stat strip) takes its
+*structure* from jobright.ai, but every number in the stat strip is
+computed live from this app's own database — no placeholder marketing
+figures.
