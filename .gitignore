@@ -41,5 +41,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# internal project notes — not part of the shipped app
+# internal project notes / AI-tooling scaffolding — not part of the shipped app
 CLAUDE.md
+AGENTS.md
