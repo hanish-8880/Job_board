@@ -6,6 +6,12 @@ const nextConfig: NextConfig = {
   // an unresolvable chunk reference — keeping it external lets Node resolve
   // it normally from node_modules instead.
   serverExternalPackages: ["pdf-parse", "pdfjs-dist"],
+  // Vercel's serverless file tracer doesn't follow pdfjs-dist's dynamic
+  // worker require, so the worker script goes missing at runtime unless
+  // explicitly included for this route.
+  outputFileTracingIncludes: {
+    "/api/resume/parse": ["./node_modules/pdfjs-dist/**"],
+  },
 };
 
 export default nextConfig;
