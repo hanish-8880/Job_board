@@ -10,6 +10,7 @@ import {
   LayoutDashboard,
   Mail,
   Plus,
+  Search,
   Sparkles,
   Target,
   User,
@@ -24,6 +25,7 @@ interface NavItem {
 
 const CANDIDATE_NAV: NavItem[] = [
   { href: "/dashboard", label: "Home", icon: LayoutDashboard },
+  { href: "/browse", label: "Jobs", icon: Search },
   { href: "/dashboard/matches", label: "Matches", icon: Target },
   { href: "/dashboard/applied", label: "Applied", icon: FileText },
   { href: "/dashboard/saved", label: "Saved", icon: Bookmark },

@@ -12,8 +12,10 @@ import { buttonVariants } from "./ui/Button";
  */
 export default function ResumeUploadButton({
   onExtracted,
+  disabled = false,
 }: {
   onExtracted: (text: string) => void;
+  disabled?: boolean;
 }) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -52,7 +54,7 @@ export default function ResumeUploadButton({
       <button
         type="button"
         onClick={() => fileInputRef.current?.click()}
-        disabled={uploading}
+        disabled={uploading || disabled}
         className={buttonVariants({ variant: "secondary", size: "sm" })}
       >
         {uploading ? (

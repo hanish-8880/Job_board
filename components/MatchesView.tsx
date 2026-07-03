@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState, type ClipboardEvent } from "react";
 import Link from "next/link";
 import { Loader2, Target } from "lucide-react";
 import Card from "./ui/Card";
@@ -8,7 +8,12 @@ import Button from "./ui/Button";
 import Badge, { type BadgeVariant } from "./ui/Badge";
 import { Textarea } from "./ui/fields";
 import ResumeUploadButton from "./ResumeUploadButton";
+import MatchProgress from "./MatchProgress";
 import { saveResumeText } from "@/app/dashboard/resume/actions";
+
+// A paste shorter than this reads as an edit to existing text, not someone
+// dropping in a whole resume — so it doesn't auto-trigger scoring.
+const MIN_PASTE_LENGTH_TO_AUTOSCORE = 200;
 
 interface MatchResult {
   jobId: string;
@@ -43,16 +48,18 @@ export default function MatchesView({
   const [computedAt, setComputedAt] = useState(initialComputedAt);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  async function handleFindMatches() {
-    if (!resumeText.trim()) {
+  async function handleFindMatches(textOverride?: string) {
+    const text = (textOverride ?? resumeText).trim();
+    if (!text) {
       setError("Add your resume text or upload a file first.");
       return;
     }
     setLoading(true);
     setError(null);
     try {
-      const saveResult = await saveResumeText(resumeText);
+      const saveResult = await saveResumeText(text);
       if (saveResult.error) throw new Error(saveResult.error);
 
       const response = await fetch("/api/ai/match-jobs", { method: "POST" });
@@ -70,6 +77,23 @@ export default function MatchesView({
     }
   }
 
+  function handleResumeExtracted(text: string) {
+    setResumeText(text);
+    handleFindMatches(text);
+  }
+
+  function handleTextareaPaste(event: ClipboardEvent<HTMLTextAreaElement>) {
+    const pasted = event.clipboardData.getData("text");
+    if (pasted.trim().length < MIN_PASTE_LENGTH_TO_AUTOSCORE) return;
+    // Let the browser finish inserting the pasted text before reading the
+    // textarea's real value — onChange hasn't fired yet at this point.
+    requestAnimationFrame(() => {
+      const fullText = textareaRef.current?.value ?? pasted;
+      setResumeText(fullText);
+      handleFindMatches(fullText);
+    });
+  }
+
   if (editingResume) {
     return (
       <div className="max-w-2xl">
@@ -78,43 +102,44 @@ export default function MatchesView({
             <p className="text-xs font-semibold uppercase tracking-[0.06em] text-ink-soft">
               Resume
             </p>
-            <ResumeUploadButton onExtracted={setResumeText} />
+            <ResumeUploadButton onExtracted={handleResumeExtracted} disabled={loading} />
           </div>
           <p className="mt-1.5 text-xs text-ink-faint">
-            Accepts .pdf, .docx, or .txt, or paste text directly.
+            Accepts .pdf, .docx, or .txt, or paste text directly — either
+            one scores your matches automatically, no extra click needed.
           </p>
           <Textarea
+            ref={textareaRef}
             value={resumeText}
             onChange={(event) => setResumeText(event.target.value)}
+            onPaste={handleTextareaPaste}
             rows={14}
             className="mt-3"
             placeholder="Paste your resume as plain text, or upload a file above."
+            disabled={loading}
           />
           {error && <p className="mt-2 text-sm text-weak">{error}</p>}
-          <div className="mt-3 flex gap-3">
-            <Button onClick={handleFindMatches} disabled={loading}>
-              {loading ? (
-                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-              ) : (
+
+          {loading ? (
+            <div className="mt-4">
+              <MatchProgress />
+            </div>
+          ) : (
+            <div className="mt-3 flex gap-3">
+              <Button onClick={() => handleFindMatches()}>
                 <Target className="h-4 w-4" aria-hidden />
-              )}
-              {loading ? "Scoring…" : "Find my matches"}
-            </Button>
-            {computedAt && (
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => setEditingResume(false)}
-              >
-                Cancel
+                Find my matches
               </Button>
-            )}
-          </div>
-          {loading && (
-            <p className="mt-2 text-xs text-ink-faint">
-              Scoring against every listing in one pass — usually takes
-              20-30 seconds.
-            </p>
+              {computedAt && (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => setEditingResume(false)}
+                >
+                  Cancel
+                </Button>
+              )}
+            </div>
           )}
         </Card>
       </div>
@@ -138,10 +163,11 @@ export default function MatchesView({
             variant="secondary"
             size="sm"
             onClick={() => setEditingResume(true)}
+            disabled={loading}
           >
             Update resume
           </Button>
-          <Button onClick={handleFindMatches} disabled={loading}>
+          <Button onClick={() => handleFindMatches()} disabled={loading}>
             {loading ? (
               <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
             ) : (
@@ -151,16 +177,16 @@ export default function MatchesView({
           </Button>
         </div>
       </div>
+
       {loading && (
-        <p className="mt-2 text-xs text-ink-faint">
-          Scoring against every listing in one pass — usually takes 20-30
-          seconds.
-        </p>
+        <div className="mt-4">
+          <MatchProgress />
+        </div>
       )}
 
       {error && <p className="mt-4 text-sm text-weak">{error}</p>}
 
-      {atsScore !== null && (
+      {!loading && atsScore !== null && (
         <Card className="mt-6 p-5">
           <p className="text-xs font-semibold uppercase tracking-[0.06em] text-ink-soft">
             ATS score
@@ -173,7 +199,7 @@ export default function MatchesView({
         </Card>
       )}
 
-      {results.length > 0 && (
+      {!loading && results.length > 0 && (
         <div className="mt-4 flex flex-col gap-3">
           {results.map((result) => (
             <Card
