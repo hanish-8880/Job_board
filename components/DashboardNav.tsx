@@ -11,6 +11,7 @@ import {
   Mail,
   Plus,
   Sparkles,
+  Target,
   User,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -23,6 +24,7 @@ interface NavItem {
 
 const CANDIDATE_NAV: NavItem[] = [
   { href: "/dashboard", label: "Home", icon: LayoutDashboard },
+  { href: "/dashboard/matches", label: "Matches", icon: Target },
   { href: "/dashboard/applied", label: "Applied", icon: FileText },
   { href: "/dashboard/saved", label: "Saved", icon: Bookmark },
   { href: "/dashboard/resume", label: "Resume", icon: FileText },

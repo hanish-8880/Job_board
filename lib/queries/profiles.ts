@@ -1,11 +1,13 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Profile } from "@/lib/types";
+import type { Profile, ResumeMatch } from "@/lib/types";
 
 interface ProfileRow {
   id: string;
   role: "candidate" | "employer";
   full_name: string | null;
   resume_text: string | null;
+  resume_match_results: ResumeMatch[] | null;
+  resume_match_computed_at: string | null;
   created_at: string;
 }
 
@@ -15,6 +17,8 @@ function mapProfileRow(row: ProfileRow): Profile {
     role: row.role,
     fullName: row.full_name,
     resumeText: row.resume_text,
+    resumeMatchResults: row.resume_match_results,
+    resumeMatchComputedAt: row.resume_match_computed_at,
     createdAt: row.created_at,
   };
 }
@@ -51,5 +55,20 @@ export async function setProfileRole(
   role: "candidate" | "employer"
 ): Promise<void> {
   const { error } = await supabase.from("profiles").update({ role }).eq("id", userId);
+  if (error) throw error;
+}
+
+export async function saveResumeMatches(
+  supabase: SupabaseClient,
+  userId: string,
+  matches: ResumeMatch[]
+): Promise<void> {
+  const { error } = await supabase
+    .from("profiles")
+    .update({
+      resume_match_results: matches,
+      resume_match_computed_at: new Date().toISOString(),
+    })
+    .eq("id", userId);
   if (error) throw error;
 }

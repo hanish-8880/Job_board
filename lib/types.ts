@@ -25,11 +25,18 @@ export interface Job {
 
 export type UserRole = "candidate" | "employer";
 
+export interface ResumeMatch {
+  jobId: string;
+  matchScore: number;
+}
+
 export interface Profile {
   id: string;
   role: UserRole;
   fullName: string | null;
   resumeText: string | null;
+  resumeMatchResults: ResumeMatch[] | null;
+  resumeMatchComputedAt: string | null;
   createdAt: string;
 }
 
