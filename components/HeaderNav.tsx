@@ -21,7 +21,7 @@ const linkClass =
 function linksForRole(role: UserRole | null) {
   if (role === "employer") {
     return [
-      { href: "/", label: "Browse", icon: Search },
+      { href: "/browse", label: "Browse", icon: Search },
       { href: "/employer", label: "Dashboard", icon: LayoutDashboard },
       { href: "/employer/jobs", label: "My Jobs", icon: Briefcase },
       { href: "/employer/jobs/new", label: "Post a Role", icon: Plus },
@@ -29,13 +29,13 @@ function linksForRole(role: UserRole | null) {
   }
   if (role === "candidate") {
     return [
-      { href: "/", label: "Browse", icon: Search },
+      { href: "/browse", label: "Browse", icon: Search },
       { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
       { href: "/dashboard/saved", label: "Saved", icon: Bookmark },
     ];
   }
   return [
-    { href: "/", label: "Browse", icon: Search },
+    { href: "/browse", label: "Browse", icon: Search },
     { href: "/login", label: "Log in", icon: LogIn },
     { href: "/signup", label: "Sign up", icon: UserPlus },
   ];

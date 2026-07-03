@@ -13,6 +13,7 @@ export interface LoginState {
 export async function login(_prevState: LoginState, formData: FormData): Promise<LoginState> {
   const email = String(formData.get("email") ?? "");
   const password = String(formData.get("password") ?? "");
+  const next = formData.get("next");
 
   const errors = validateLogin({ email, password });
   if (Object.keys(errors).length > 0) {
@@ -24,6 +25,10 @@ export async function login(_prevState: LoginState, formData: FormData): Promise
 
   if (error || !data.user) {
     return { errors: {}, formError: "Incorrect email or password." };
+  }
+
+  if (typeof next === "string" && next.startsWith("/")) {
+    redirect(next);
   }
 
   const profile = await getProfile(supabase, data.user.id);

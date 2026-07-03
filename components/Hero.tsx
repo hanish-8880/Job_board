@@ -58,7 +58,7 @@ export default function Hero({
                 shown in full on the page. No black boxes, no fake AI.
               </p>
               <div className="mt-7 flex flex-wrap gap-3">
-                <Link href="#roles" className={buttonVariants({ size: "md" })}>
+                <Link href="/browse" className={buttonVariants({ size: "md" })}>
                   Browse roles
                 </Link>
                 <Link

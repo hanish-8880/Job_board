@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { ArrowLeft, Briefcase, DollarSign, MapPin } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getJobById } from "@/lib/queries/jobs";
@@ -21,6 +22,11 @@ export default async function JobDetailPage({
 }) {
   const { id } = await params;
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect(`/login?next=/jobs/${id}`);
+
   const job = await getJobById(supabase, id);
 
   if (!job) {
@@ -32,7 +38,7 @@ export default async function JobDetailPage({
         />
         <div className="mt-6">
           <Link
-            href="/"
+            href="/browse"
             className="text-sm font-medium text-primary underline underline-offset-2"
           >
             ← Back to Browse
@@ -42,15 +48,10 @@ export default async function JobDetailPage({
     );
   }
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  const [saved, applied] = user
-    ? await Promise.all([
-        isBookmarked(supabase, job.id, user.id),
-        hasApplied(supabase, job.id, user.id),
-      ])
-    : [false, false];
+  const [saved, applied] = await Promise.all([
+    isBookmarked(supabase, job.id, user.id),
+    hasApplied(supabase, job.id, user.id),
+  ]);
 
   const signal = computeSignal(job);
   const flags = detectRedFlags(job);
@@ -62,7 +63,7 @@ export default async function JobDetailPage({
   return (
     <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
       <Link
-        href="/"
+        href="/browse"
         className="inline-flex items-center gap-1.5 text-sm font-medium text-ink-faint hover:text-primary"
       >
         <ArrowLeft className="h-4 w-4" aria-hidden />
@@ -89,7 +90,7 @@ export default async function JobDetailPage({
               </div>
             </div>
           </div>
-          <SaveButton jobId={job.id} initialSaved={saved} isLoggedIn={!!user} />
+          <SaveButton jobId={job.id} initialSaved={saved} isLoggedIn />
         </div>
 
         <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-ink-soft">
@@ -126,7 +127,7 @@ export default async function JobDetailPage({
           <ApplyPanel
             jobId={job.id}
             company={job.company}
-            isLoggedIn={!!user}
+            isLoggedIn
             initialApplied={applied}
           />
         </div>

@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState } from "react";
+import { Suspense, useActionState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { Radio } from "lucide-react";
 import { Input } from "@/components/ui/fields";
 import Button from "@/components/ui/Button";
@@ -15,7 +16,17 @@ const fieldLabel = "block text-xs font-semibold uppercase tracking-[0.06em] text
 const fieldError = "mt-1.5 text-sm text-weak";
 
 export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
   const [state, formAction, pending] = useActionState(login, initialState);
+  const searchParams = useSearchParams();
+  const next = searchParams.get("next");
 
   return (
     <div className="mx-auto max-w-md px-4 py-12 sm:px-6">
@@ -38,6 +49,7 @@ export default function LoginPage() {
         </div>
 
         <form action={formAction} className="flex flex-col gap-5">
+          {next && <input type="hidden" name="next" value={next} />}
           <div>
             <label className={fieldLabel} htmlFor="email">
               Email
