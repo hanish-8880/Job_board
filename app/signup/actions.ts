@@ -43,5 +43,9 @@ export async function signup(
     return { errors: {}, needsConfirmation: true };
   }
 
-  redirect(role === "employer" ? "/employer" : "/dashboard");
+  // New candidates land on Matches first — the "upload your resume, see
+  // your ATS score and ranked job matches" onboarding step. Login (an
+  // existing account) goes straight to /dashboard instead; this is a
+  // one-time first-signup step, not something to repeat every visit.
+  redirect(role === "employer" ? "/employer" : "/dashboard/matches");
 }

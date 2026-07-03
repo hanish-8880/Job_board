@@ -1,12 +1,12 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Profile, ResumeMatch } from "@/lib/types";
+import type { Profile, ResumeMatchResults } from "@/lib/types";
 
 interface ProfileRow {
   id: string;
   role: "candidate" | "employer";
   full_name: string | null;
   resume_text: string | null;
-  resume_match_results: ResumeMatch[] | null;
+  resume_match_results: ResumeMatchResults | null;
   resume_match_computed_at: string | null;
   created_at: string;
 }
@@ -61,12 +61,12 @@ export async function setProfileRole(
 export async function saveResumeMatches(
   supabase: SupabaseClient,
   userId: string,
-  matches: ResumeMatch[]
+  results: ResumeMatchResults
 ): Promise<void> {
   const { error } = await supabase
     .from("profiles")
     .update({
-      resume_match_results: matches,
+      resume_match_results: results,
       resume_match_computed_at: new Date().toISOString(),
     })
     .eq("id", userId);

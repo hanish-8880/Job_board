@@ -6,16 +6,26 @@ import { getProfile, saveResumeMatches } from "@/lib/queries/profiles";
 import { AI_MODEL, getGeminiClient } from "@/lib/ai";
 import type { ResumeMatch } from "@/lib/types";
 
+// Scoring 30 jobs in one prompt regularly takes ~25-30s — comfortably under
+// Vercel's default Hobby-plan function timeout (10s) without this, but well
+// inside it once raised explicitly.
+export const maxDuration = 60;
+
 // Capped so this stays a single request: one Gemini call scored against
 // every job, not one call per job. Bounds cost, latency, and prompt size
 // as the board grows past a handful of listings.
-const MAX_JOBS_TO_SCORE = 20;
+const MAX_JOBS_TO_SCORE = 30;
 const DESCRIPTION_SNIPPET_CHARS = 260;
 const MAX_RESUME_CHARS = 6000;
 
 const RESPONSE_SCHEMA = {
   type: Type.OBJECT,
   properties: {
+    atsScore: {
+      type: Type.INTEGER,
+      description:
+        "Score from 0 to 100 (not 0-10) for overall resume quality, clarity, and formatting for automated screening — independent of any specific job.",
+    },
     matches: {
       type: Type.ARRAY,
       items: {
@@ -34,7 +44,7 @@ const RESPONSE_SCHEMA = {
       },
     },
   },
-  required: ["matches"],
+  required: ["atsScore", "matches"],
 };
 
 export async function POST() {
@@ -88,21 +98,24 @@ export async function POST() {
         responseMimeType: "application/json",
         responseSchema: RESPONSE_SCHEMA,
         systemInstruction:
-          "You score how well a candidate's resume fits each job listed below, one matchScore per job. " +
-          "Use the full 0-100 range rather than clustering near a 0-10 scale — a genuine 45 should read as " +
-          "45, not 4 or 5. Return exactly one entry per job id given, using the id string exactly as provided.",
+          "You review a candidate's resume. atsScore is one overall score (0-100) for resume quality, " +
+          "clarity, and formatting for automated screening, independent of any specific job. matches gives " +
+          "one matchScore (0-100) per job listed below, for fit against that specific job. Use the full " +
+          "0-100 range rather than clustering near a 0-10 scale — a genuine 45 should read as 45, not 4 or 5. " +
+          "Return exactly one match entry per job id given, using the id string exactly as provided.",
       },
     });
 
     const raw = response.text;
     if (!raw) throw new Error("Empty response from model.");
-    const parsed = JSON.parse(raw) as { matches?: ResumeMatch[] };
+    const parsed = JSON.parse(raw) as { atsScore?: number; matches?: ResumeMatch[] };
 
+    const atsScore = typeof parsed.atsScore === "number" ? parsed.atsScore : 0;
     const matches = (parsed.matches ?? [])
       .filter((match) => knownIds.has(match.jobId))
       .sort((a, b) => b.matchScore - a.matchScore);
 
-    await saveResumeMatches(supabase, user.id, matches);
+    await saveResumeMatches(supabase, user.id, { atsScore, matches });
 
     const jobById = new Map(candidates.map((job) => [job.id, job]));
     const results = matches.map((match) => {
@@ -115,7 +128,12 @@ export async function POST() {
       };
     });
 
-    return NextResponse.json({ results, model: AI_MODEL, computedAt: new Date().toISOString() });
+    return NextResponse.json({
+      atsScore,
+      results,
+      model: AI_MODEL,
+      computedAt: new Date().toISOString(),
+    });
   } catch (error) {
     console.error("AI match-jobs failed", error);
     return NextResponse.json(

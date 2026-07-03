@@ -1,11 +1,8 @@
-import Link from "next/link";
-import { FileText } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getPublishedJobs } from "@/lib/queries/jobs";
 import { getProfile } from "@/lib/queries/profiles";
 import { AI_MODEL } from "@/lib/ai";
 import MatchesView from "@/components/MatchesView";
-import EmptyState from "@/components/EmptyState";
 import PageHeader from "@/components/ui/PageHeader";
 
 export default async function MatchesPage() {
@@ -20,25 +17,9 @@ export default async function MatchesPage() {
     getPublishedJobs(supabase),
   ]);
 
-  if (!profile?.resumeText) {
-    return (
-      <div>
-        <PageHeader title="Matches" />
-        <div className="mt-6">
-          <EmptyState icon={FileText} title="No resume yet" message="Add your resume text first." />
-        </div>
-        <Link
-          href="/dashboard/resume"
-          className="mt-4 inline-block text-sm font-medium text-primary underline underline-offset-2"
-        >
-          Add resume →
-        </Link>
-      </div>
-    );
-  }
-
   const jobById = new Map(jobs.map((job) => [job.id, job]));
-  const initialResults = (profile.resumeMatchResults ?? [])
+  const stored = profile?.resumeMatchResults;
+  const initialResults = (stored?.matches ?? [])
     .filter((match) => jobById.has(match.jobId))
     .map((match) => {
       const job = jobById.get(match.jobId)!;
@@ -55,12 +36,14 @@ export default async function MatchesPage() {
     <div>
       <PageHeader
         title="Matches"
-        description="One Gemini call scores your resume against every published role at once — computed on request, not recomputed on every visit."
+        description="Upload or paste your resume once. One Gemini call returns an ATS score and scores every published role at once — computed on request, not recomputed on every visit."
       />
       <div className="mt-6">
         <MatchesView
+          initialResumeText={profile?.resumeText ?? ""}
+          initialAtsScore={stored?.atsScore ?? null}
           initialResults={initialResults}
-          initialComputedAt={profile.resumeMatchComputedAt}
+          initialComputedAt={profile?.resumeMatchComputedAt ?? null}
           model={AI_MODEL}
         />
       </div>

@@ -539,7 +539,263 @@ const COMPANIES = [
       requirements: ["Accounting degree"],
     },
   },
+  {
+    slug: "alderbrook",
+    fullName: "Mei Lin",
+    companyName: "Alderbrook Studios",
+    website: "https://alderbrookstudios.example.com",
+    description: "Independent narrative game studio.",
+    job: {
+      title: "Game Designer",
+      location: "Remote (US/Canada)",
+      mode: "remote",
+      level: "mid",
+      salaryMin: 90000,
+      salaryMax: 115000,
+      tags: ["Game Design", "Narrative", "Unity"],
+      description:
+        "Alderbrook Studios is a nine-person team finishing our first narrative-driven adventure game for a 2027 release. We're hiring a mid-level game designer to own puzzle and pacing design for the game's back half, working closely with our writer and one other designer already on the team.",
+      responsibilities: [
+        "Design and iterate on puzzle and pacing for the game's second half",
+        "Build and maintain level layouts in Unity alongside engineering",
+        "Playtest weekly with the internal team and incorporate feedback",
+        "Collaborate directly with the writer on how mechanics reinforce story beats",
+      ],
+      requirements: [
+        "3+ years of game design experience, ideally narrative-focused",
+        "Comfortable working in Unity, even if not primarily an engineer",
+        "Has shipped at least one game, even a small one",
+      ],
+    },
+  },
+  {
+    slug: "prairiemutual",
+    fullName: "Hank Sorensen",
+    companyName: "Prairie Mutual Insurance",
+    website: "https://prairiemutual.example.com",
+    description: "Regional insurer serving the upper Midwest.",
+    job: {
+      title: "Actuarial Analyst",
+      location: "Omaha, NE (Onsite)",
+      mode: "onsite",
+      level: "mid",
+      salaryMin: 75000,
+      salaryMax: 92000,
+      tags: ["Actuarial", "Insurance", "Excel"],
+      description:
+        "Prairie Mutual Insurance underwrites home and auto policies across five Midwest states. We're hiring an actuarial analyst to support pricing reviews and reserve estimates for our home insurance line, working in our Omaha office alongside two senior actuaries.",
+      responsibilities: [
+        "Support quarterly reserve estimates for the home insurance line",
+        "Build pricing models for new state market entries",
+        "Prepare summary reports for state regulatory filings",
+      ],
+      requirements: [
+        "2+ years in an actuarial or quantitative analyst role",
+        "Progress toward ASA credential preferred",
+        "Advanced Excel and comfort with large policy datasets",
+      ],
+    },
+  },
+  {
+    slug: "bytewave",
+    fullName: "Sofia Marchetti",
+    companyName: "Bytewave Cloud",
+    website: "https://bytewavecloud.example.com",
+    description: "Infrastructure monitoring for mid-market SaaS companies.",
+    job: {
+      title: "Site Reliability Engineer",
+      location: "Remote (US/EU)",
+      mode: "remote",
+      level: "senior",
+      salaryMin: 150000,
+      salaryMax: 180000,
+      tags: ["SRE", "Kubernetes", "Observability", "Go"],
+      description:
+        "Bytewave Cloud runs the monitoring backend behind an infrastructure observability product used by about 200 mid-market SaaS companies. We're hiring a senior SRE to reduce on-call load, which is currently higher than the team wants, by fixing the root causes behind our most common pages rather than just responding to them faster.",
+      responsibilities: [
+        "Identify and fix root causes behind the team's most frequent on-call pages",
+        "Improve our own internal observability of the monitoring pipeline itself",
+        "Participate in a one-week-in-five on-call rotation",
+        "Mentor two engineers newer to production incident response",
+      ],
+      requirements: [
+        "5+ years in an SRE, infrastructure, or backend role with production on-call experience",
+        "Strong Kubernetes and Go experience",
+        "Has led at least one significant reliability improvement effort before",
+      ],
+    },
+  },
+  {
+    slug: "comet",
+    fullName: "Devon Marsh",
+    companyName: "Comet Retail Group",
+    website: "",
+    description: "",
+    job: {
+      title: "Merchandising Coordinator",
+      location: "Onsite",
+      mode: "onsite",
+      level: "junior",
+      salaryMin: null,
+      salaryMax: null,
+      tags: ["Retail", "Fast-Paced"],
+      description:
+        "Join our fast-paced retail team as a merchandising coordinator. Great opportunity to wear many hats in a growing company.",
+      responsibilities: ["Support merchandising team", "Other duties as assigned"],
+      requirements: ["Self-starter", "Team player"],
+    },
+  },
+  {
+    slug: "northstarbiotech",
+    fullName: "Dr. Aisha Kone",
+    companyName: "Northstar Biotech",
+    website: "https://northstarbiotech.example.com",
+    description: "Early-stage biotech developing diagnostic assays.",
+    job: {
+      title: "Lab Data Coordinator",
+      location: "Cambridge, MA (Onsite)",
+      mode: "onsite",
+      level: "mid",
+      salaryMin: 62000,
+      salaryMax: 74000,
+      tags: ["Lab Operations", "Data Entry", "LIMS"],
+      description:
+        "Northstar Biotech develops diagnostic assays for early-stage cancer detection. We're hiring a lab data coordinator to manage our LIMS records and keep sample tracking accurate as our lab scales from one to two shifts.",
+      responsibilities: [
+        "Maintain accurate sample records in the lab's LIMS system",
+        "Coordinate handoffs between the first and second lab shifts",
+        "Flag data discrepancies to the lab manager before they compound",
+      ],
+      requirements: [
+        "1-2 years in a lab operations or data coordination role",
+        "Comfortable working with a LIMS or similar lab tracking system",
+      ],
+    },
+  },
+  {
+    slug: "vellum",
+    fullName: "Ruth Okafor",
+    companyName: "Vellum Publishing",
+    website: "",
+    description: "",
+    job: {
+      title: "Editorial Assistant",
+      location: "Onsite",
+      mode: "onsite",
+      level: "junior",
+      salaryMin: 16000,
+      salaryMax: 18000,
+      tags: ["Editorial", "Publishing"],
+      description: "Looking for an editorial assistant to support our small press.",
+      responsibilities: ["Proofread manuscripts", "Support editors"],
+      requirements: ["Strong writing skills"],
+    },
+  },
+  {
+    slug: "quickstep",
+    fullName: "Marco Diaz",
+    companyName: "Quickstep Delivery",
+    website: "",
+    description: "",
+    job: {
+      title: "Driver Ops Lead",
+      location: "Onsite",
+      mode: "onsite",
+      level: "mid",
+      salaryMin: null,
+      salaryMax: null,
+      tags: ["Logistics", "Operations"],
+      description:
+        "Before we can bring you on full-time, complete an unpaid trial shift coordinating our driver schedule. Reply-all to the ops team with your availability tonight so everyone can plan around it.",
+      responsibilities: ["Coordinate driver schedules", "Other duties as assigned"],
+      requirements: ["Available immediately"],
+    },
+  },
+  {
+    slug: "sablefinch",
+    fullName: "Gregory Vance",
+    companyName: "Sable & Finch Law",
+    website: "https://sablefinchlaw.example.com",
+    description: "Boutique litigation firm specializing in commercial disputes.",
+    job: {
+      title: "Paralegal",
+      location: "Chicago, IL (Onsite)",
+      mode: "onsite",
+      level: "mid",
+      salaryMin: 58000,
+      salaryMax: 70000,
+      tags: ["Legal", "Litigation", "Paralegal"],
+      description:
+        "Sable & Finch Law is a twelve-attorney litigation boutique handling commercial disputes for mid-sized businesses. We're hiring a paralegal to support two partners directly on discovery-heavy cases, with real client contact rather than being routed entirely through associates.",
+      responsibilities: [
+        "Manage discovery document review and production for active cases",
+        "Draft routine filings for partner review",
+        "Coordinate directly with clients on document requests",
+      ],
+      requirements: [
+        "3+ years as a litigation paralegal",
+        "Experience with e-discovery platforms",
+        "Comfortable with direct client communication",
+      ],
+    },
+  },
+  {
+    slug: "orbitpayments",
+    fullName: "Isabel Cruz",
+    companyName: "Orbit Payments",
+    website: "https://orbitpayments.example.com",
+    description: "Payment processing for online marketplaces.",
+    job: {
+      title: "Fraud Analyst",
+      location: "Remote (US)",
+      mode: "remote",
+      level: "mid",
+      salaryMin: 85000,
+      salaryMax: 105000,
+      tags: ["Fraud", "Payments", "SQL"],
+      description:
+        "Orbit Payments processes payments for a network of online marketplaces. We're hiring a fraud analyst to investigate flagged transactions and tune our detection rules, working closely with the two engineers who maintain the fraud-scoring pipeline.",
+      responsibilities: [
+        "Investigate transactions flagged by the fraud-scoring pipeline",
+        "Propose rule changes to reduce false positives without missing real fraud",
+        "Write weekly summaries of fraud trends for the risk team",
+      ],
+      requirements: [
+        "2+ years in fraud, risk, or trust and safety analysis",
+        "Comfortable writing SQL queries against transaction data",
+      ],
+    },
+  },
+  {
+    slug: "thistle",
+    fullName: "Paula Bennett",
+    companyName: "Thistle Home Goods",
+    website: "https://thistlehomegoods.example.com",
+    description: "Direct-to-consumer home goods brand.",
+    job: {
+      title: "E-commerce Manager",
+      location: "Remote (US)",
+      mode: "remote",
+      level: "mid",
+      salaryMin: 80000,
+      salaryMax: 100000,
+      tags: ["E-commerce", "Shopify", "DTC"],
+      description:
+        "Thistle Home Goods is a direct-to-consumer home goods brand selling through our own Shopify storefront. We're hiring an e-commerce manager to own site merchandising and conversion optimization as we prepare for our busiest quarter.",
+      responsibilities: [
+        "Own site merchandising and product page optimization on Shopify",
+        "Run A/B tests on checkout flow and report results to leadership",
+        "Coordinate with the small design team on seasonal storefront updates",
+      ],
+      requirements: [
+        "3+ years managing a DTC e-commerce storefront, ideally on Shopify",
+        "Comfortable interpreting conversion and funnel analytics",
+      ],
+    },
+  },
 ];
+
+module.exports = { COMPANIES, seedOne };
 
 async function seedOne(entry, index) {
   const client = createClient(URL, KEY);
@@ -595,10 +851,15 @@ async function seedOne(entry, index) {
   console.log(`OK  ${entry.companyName} — ${job.title}`);
 }
 
-(async () => {
-  console.log(`Seeding ${COMPANIES.length} companies...`);
-  for (let i = 0; i < COMPANIES.length; i++) {
-    await seedOne(COMPANIES[i], i);
-  }
-  console.log("Done.");
-})();
+// Only auto-run when executed directly (`node scripts/seed-demo-data.js`),
+// not when required as a module — lets a one-off top-up script reuse
+// COMPANIES/seedOne for a subset without re-seeding everything.
+if (require.main === module) {
+  (async () => {
+    console.log(`Seeding ${COMPANIES.length} companies...`);
+    for (let i = 0; i < COMPANIES.length; i++) {
+      await seedOne(COMPANIES[i], i);
+    }
+    console.log("Done.");
+  })();
+}

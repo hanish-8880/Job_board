@@ -21,5 +21,5 @@ export async function chooseRole(formData: FormData): Promise<void> {
   // onboarding on a future OAuth sign-in.
   await supabase.auth.updateUser({ data: { role } });
 
-  redirect(role === "employer" ? "/employer" : "/dashboard");
+  redirect(role === "employer" ? "/employer" : "/dashboard/matches");
 }

@@ -4,6 +4,8 @@ import { getJobById } from "@/lib/queries/jobs";
 import { getProfile } from "@/lib/queries/profiles";
 import { AI_MODEL, MAX_AI_INPUT_CHARS, getGeminiClient } from "@/lib/ai";
 
+export const maxDuration = 30;
+
 export async function POST(request: Request) {
   const supabase = await createClient();
   const {

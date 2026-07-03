@@ -30,12 +30,17 @@ export interface ResumeMatch {
   matchScore: number;
 }
 
+export interface ResumeMatchResults {
+  atsScore: number;
+  matches: ResumeMatch[];
+}
+
 export interface Profile {
   id: string;
   role: UserRole;
   fullName: string | null;
   resumeText: string | null;
-  resumeMatchResults: ResumeMatch[] | null;
+  resumeMatchResults: ResumeMatchResults | null;
   resumeMatchComputedAt: string | null;
   createdAt: string;
 }
