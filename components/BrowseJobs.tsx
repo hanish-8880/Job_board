@@ -10,6 +10,7 @@ import JobCard from "@/components/JobCard";
 import SearchFilters from "@/components/SearchFilters";
 import EmptyState from "@/components/EmptyState";
 import Hero from "@/components/Hero";
+import HowItWorks from "@/components/HowItWorks";
 import Reveal from "@/components/ui/Reveal";
 
 export default function BrowseJobs({
@@ -41,6 +42,8 @@ export default function BrowseJobs({
   return (
     <div>
       <Hero {...stats} previewJob={previewJob} />
+
+      <HowItWorks />
 
       <div id="roles" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-10 sm:px-6">
         <SearchFilters filters={filters} onChange={setFilters} />
