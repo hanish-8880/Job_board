@@ -67,6 +67,16 @@ the same "state the tradeoff" discipline as the smaller version.
   vague company info, rejection threats), and shows the exact quoted
   phrase that triggered each flag.
 
+The listings visible on the live demo aren't fabricated data sitting
+outside the database — they're real rows, created by
+`scripts/seed-demo-data.js`, which scripts ~20 real signups through the
+actual signup → post-a-role flow (public anon key, real RLS-protected
+inserts, no service_role key) so Signal Score and the red-flag detector
+have realistic variety to demonstrate against. Every one of those rows
+could equally have been created by a person clicking through the UI —
+the script is committed so that's independently checkable, not just
+claimed.
+
 ### Accounts
 
 Email/password and Google sign-in via Supabase Auth. Every account is
@@ -87,7 +97,12 @@ choice through the OAuth redirect).
 ### Candidate dashboard (`/dashboard`)
 
 - **Saved roles** and **Applied roles** (with real, employer-set status).
-- **Resume** — plain-text resume, used by both AI features below.
+- **Resume** — plain-text resume, used by all three AI features below.
+- **Matches** — one Gemini call scores your resume against every currently
+  published role (capped at 20) in a single request, rather than one call
+  per job. Computed on request and cached on your profile, so revisiting
+  the page doesn't silently re-run it — you see when it was last computed
+  and can explicitly recompute.
 - **AI Resume Review + Match Score** — a real Google Gemini (`gemini-2.5-flash`) call
   given your resume text and one job's description. Returns an ATS score,
   a match score for that specific job, missing skills, strengths, and
