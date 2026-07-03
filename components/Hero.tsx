@@ -49,11 +49,7 @@ export default function Hero({
               transition={{ duration: 0.4 }}
               className="max-w-2xl"
             >
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">
-                <Radio className="h-3.5 w-3.5" aria-hidden />
-                Every listing shows its work
-              </span>
-              <h1 className="mt-5 text-4xl font-extrabold leading-tight tracking-tight text-ink sm:text-5xl">
+              <h1 className="text-4xl font-extrabold leading-tight tracking-tight text-ink sm:text-5xl">
                 Job listings that don&apos;t hide the fine print.
               </h1>
               <p className="mt-4 text-lg text-ink-soft">
