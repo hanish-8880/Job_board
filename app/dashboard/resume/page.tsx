@@ -15,7 +15,7 @@ export default async function ResumePage() {
     <div>
       <PageHeader
         title="Resume"
-        description="Pasted as plain text, used by AI Review and Cover Letter below. No file upload or PDF parsing — a deliberate cut to avoid a whole separate failure surface for a feature that works fine as plain text."
+        description="Upload a .pdf, .docx, or .txt file, or paste text directly. Stored and used as plain text by Matches, AI Review, and Cover Letter below — review the extracted text before saving, since PDF extraction can occasionally miss formatting."
       />
       <div className="mt-6">
         <ResumeForm initialText={profile?.resumeText ?? ""} />
