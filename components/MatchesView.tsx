@@ -2,14 +2,16 @@
 
 import { useRef, useState, type ClipboardEvent } from "react";
 import Link from "next/link";
-import { Loader2, Target } from "lucide-react";
+import { Briefcase, Loader2, MapPin, Target } from "lucide-react";
 import Card from "./ui/Card";
-import Button from "./ui/Button";
-import Badge, { type BadgeVariant } from "./ui/Badge";
+import Button, { buttonVariants } from "./ui/Button";
 import { Textarea } from "./ui/fields";
 import ResumeUploadButton from "./ResumeUploadButton";
 import MatchProgress from "./MatchProgress";
+import MatchScoreRing from "./MatchScoreRing";
+import SaveButton from "./SaveButton";
 import { saveResumeText } from "@/app/dashboard/resume/actions";
+import type { ExperienceLevel, WorkMode } from "@/lib/types";
 
 // A paste shorter than this reads as an edit to existing text, not someone
 // dropping in a whole resume — so it doesn't auto-trigger scoring.
@@ -19,13 +21,12 @@ interface MatchResult {
   jobId: string;
   title: string;
   company: string;
+  location: string;
+  mode: WorkMode;
+  level: ExperienceLevel;
+  tags: string[];
+  postedLabel: string;
   matchScore: number;
-}
-
-function scoreVariant(score: number): BadgeVariant {
-  if (score >= 75) return "strong";
-  if (score >= 45) return "moderate";
-  return "weak";
 }
 
 export default function MatchesView({
@@ -33,14 +34,17 @@ export default function MatchesView({
   initialAtsScore,
   initialResults,
   initialComputedAt,
+  initialBookmarkedIds,
   model,
 }: {
   initialResumeText: string;
   initialAtsScore: number | null;
   initialResults: MatchResult[];
   initialComputedAt: string | null;
+  initialBookmarkedIds: string[];
   model: string;
 }) {
+  const bookmarkedIds = new Set(initialBookmarkedIds);
   const [resumeText, setResumeText] = useState(initialResumeText);
   const [editingResume, setEditingResume] = useState(!initialComputedAt);
   const [atsScore, setAtsScore] = useState(initialAtsScore);
@@ -147,7 +151,7 @@ export default function MatchesView({
   }
 
   return (
-    <div className="max-w-2xl">
+    <div className="max-w-3xl">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-ink-soft">
           {computedAt &&
@@ -202,22 +206,60 @@ export default function MatchesView({
       {!loading && results.length > 0 && (
         <div className="mt-4 flex flex-col gap-3">
           {results.map((result) => (
-            <Card
-              key={result.jobId}
-              className="flex items-center justify-between gap-4 px-4 py-4"
-            >
-              <div className="min-w-0">
-                <Link
-                  href={`/jobs/${result.jobId}`}
-                  className="font-bold text-ink hover:underline"
-                >
-                  {result.title}
-                </Link>
-                <p className="text-sm text-ink-soft">{result.company}</p>
+            <Card key={result.jobId} className="p-5">
+              <div className="flex items-start gap-4">
+                <MatchScoreRing score={result.matchScore} />
+
+                <div className="min-w-0 flex-1">
+                  <Link
+                    href={`/jobs/${result.jobId}`}
+                    className="font-bold text-ink hover:text-primary hover:underline"
+                  >
+                    {result.title}
+                  </Link>
+                  <p className="mt-0.5 text-sm text-ink-soft">
+                    {result.company} · {result.postedLabel}
+                  </p>
+
+                  <div className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-ink-soft">
+                    <span className="inline-flex items-center gap-1.5">
+                      <MapPin className="h-4 w-4 text-ink-faint" aria-hidden />
+                      {result.location}
+                    </span>
+                    <span className="inline-flex items-center gap-1.5">
+                      <Briefcase className="h-4 w-4 text-ink-faint" aria-hidden />
+                      {result.mode} · {result.level}
+                    </span>
+                  </div>
+
+                  {result.tags.length > 0 && (
+                    <div className="mt-2.5 flex flex-wrap gap-1.5">
+                      {result.tags.slice(0, 5).map((tag) => (
+                        <span
+                          key={tag}
+                          className="rounded-full bg-background px-2.5 py-0.5 text-xs text-ink-soft"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex shrink-0 flex-col items-end gap-2">
+                  <SaveButton
+                    jobId={result.jobId}
+                    initialSaved={bookmarkedIds.has(result.jobId)}
+                    isLoggedIn
+                  />
+                  <Link
+                    href={`/jobs/${result.jobId}`}
+                    className={buttonVariants({ size: "sm" })}
+                  >
+                    View & Apply
+                  </Link>
+                </div>
               </div>
-              <Badge variant={scoreVariant(result.matchScore)}>
-                {result.matchScore}% match
-              </Badge>
             </Card>
           ))}
         </div>

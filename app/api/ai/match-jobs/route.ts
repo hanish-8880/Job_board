@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getPublishedJobs } from "@/lib/queries/jobs";
 import { getProfile, saveResumeMatches } from "@/lib/queries/profiles";
 import { AI_MODEL, getGeminiClient } from "@/lib/ai";
+import { formatPostedLabel } from "@/lib/format";
 import type { ResumeMatch } from "@/lib/types";
 
 // Scoring 30 jobs in one prompt regularly takes ~25-30s — comfortably under
@@ -124,6 +125,11 @@ export async function POST() {
         jobId: job.id,
         title: job.title,
         company: job.company,
+        location: job.location,
+        mode: job.mode,
+        level: job.level,
+        tags: job.tags,
+        postedLabel: formatPostedLabel(job.postedAt),
         matchScore: match.matchScore,
       };
     });

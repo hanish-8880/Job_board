@@ -1,7 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { getPublishedJobs } from "@/lib/queries/jobs";
 import { getProfile } from "@/lib/queries/profiles";
+import { getBookmarkedJobIds } from "@/lib/queries/bookmarks";
 import { AI_MODEL } from "@/lib/ai";
+import { formatPostedLabel } from "@/lib/format";
 import MatchesView from "@/components/MatchesView";
 import PageHeader from "@/components/ui/PageHeader";
 
@@ -12,9 +14,10 @@ export default async function MatchesPage() {
   } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const [profile, jobs] = await Promise.all([
+  const [profile, jobs, bookmarkedIds] = await Promise.all([
     getProfile(supabase, user.id),
     getPublishedJobs(supabase),
+    getBookmarkedJobIds(supabase, user.id),
   ]);
 
   const jobById = new Map(jobs.map((job) => [job.id, job]));
@@ -27,6 +30,11 @@ export default async function MatchesPage() {
         jobId: job.id,
         title: job.title,
         company: job.company,
+        location: job.location,
+        mode: job.mode,
+        level: job.level,
+        tags: job.tags,
+        postedLabel: formatPostedLabel(job.postedAt),
         matchScore: match.matchScore,
       };
     })
@@ -44,6 +52,7 @@ export default async function MatchesPage() {
           initialAtsScore={stored?.atsScore ?? null}
           initialResults={initialResults}
           initialComputedAt={profile?.resumeMatchComputedAt ?? null}
+          initialBookmarkedIds={bookmarkedIds}
           model={AI_MODEL}
         />
       </div>
