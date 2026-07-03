@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { PDFParse } from "pdf-parse";
+import { extractText as extractPdfText, getDocumentProxy } from "unpdf";
 import mammoth from "mammoth";
 import { createClient } from "@/lib/supabase/server";
 
@@ -9,15 +9,9 @@ async function extractText(buffer: Buffer, fileName: string): Promise<string> {
   const name = fileName.toLowerCase();
 
   if (name.endsWith(".pdf")) {
-    const parser = new PDFParse({ data: buffer });
-    try {
-      const result = await parser.getText();
-      // Strip pdf-parse's "-- N of M --" per-page footer; it's metadata
-      // about the extraction, not part of the resume.
-      return result.text.replace(/\n*--\s*\d+\s*of\s*\d+\s*--\n*/g, "\n\n");
-    } finally {
-      await parser.destroy();
-    }
+    const pdf = await getDocumentProxy(new Uint8Array(buffer));
+    const { text } = await extractPdfText(pdf, { mergePages: true });
+    return text;
   }
 
   if (name.endsWith(".docx")) {
