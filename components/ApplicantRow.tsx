@@ -32,7 +32,8 @@ export default function ApplicantRow({
         <div>
           <p className="text-base font-bold text-ink">{applicant.candidateName}</p>
           <p className="text-xs text-ink-faint">
-            Applied {new Date(applicant.createdAt).toLocaleDateString("en-US")}
+            Applied{" "}
+            {new Date(applicant.createdAt).toLocaleDateString("en-US", { timeZone: "UTC" })}
           </p>
         </div>
         <Select

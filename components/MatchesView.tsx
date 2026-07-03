@@ -126,7 +126,11 @@ export default function MatchesView({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-ink-soft">
           {computedAt &&
-            `Last computed ${new Date(computedAt).toLocaleString("en-US")}, via Google ${model}`}
+            `Last computed ${new Date(computedAt).toLocaleString("en-US", {
+              timeZone: "UTC",
+              dateStyle: "medium",
+              timeStyle: "short",
+            })} UTC, via Google ${model}`}
         </p>
         <div className="flex gap-2">
           <Button
