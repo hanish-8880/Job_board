@@ -3,7 +3,9 @@
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { Radio, ShieldCheck, TrendingUp, type LucideIcon } from "lucide-react";
+import type { Job } from "@/lib/types";
 import { buttonVariants } from "./ui/Button";
+import SignalPreviewCard from "./SignalPreviewCard";
 
 function StatCard({
   icon: Icon,
@@ -27,54 +29,69 @@ export default function Hero({
   totalJobs,
   strongSignalCount,
   redFlagCount,
+  previewJob,
 }: {
   totalJobs: number;
   strongSignalCount: number;
   redFlagCount: number;
+  previewJob: Job | null;
 }) {
   const shouldReduceMotion = useReducedMotion();
 
   return (
     <section className="border-b border-border bg-surface">
       <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
-        <motion.div
-          initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="max-w-2xl"
-        >
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">
-            <Radio className="h-3.5 w-3.5" aria-hidden />
-            Every listing shows its work
-          </span>
-          <h1 className="mt-5 text-4xl font-extrabold leading-tight tracking-tight text-ink sm:text-5xl">
-            Job listings that don&apos;t hide the fine print.
-          </h1>
-          <p className="mt-4 text-lg text-ink-soft">
-            Every role carries a transparent Signal Score and a real-time
-            red-flag check, computed from the listing&apos;s own words and
-            shown in full on the page. No black boxes, no fake AI.
-          </p>
-          <div className="mt-7 flex flex-wrap gap-3">
-            <Link href="#roles" className={buttonVariants({ size: "md" })}>
-              Browse roles
-            </Link>
-            <Link href="/signup" className={buttonVariants({ variant: "secondary", size: "md" })}>
-              Post a role
-            </Link>
-          </div>
-        </motion.div>
+        <div className={previewJob ? "grid grid-cols-1 gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-center" : ""}>
+          <div>
+            <motion.div
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="max-w-2xl"
+            >
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">
+                <Radio className="h-3.5 w-3.5" aria-hidden />
+                Every listing shows its work
+              </span>
+              <h1 className="mt-5 text-4xl font-extrabold leading-tight tracking-tight text-ink sm:text-5xl">
+                Job listings that don&apos;t hide the fine print.
+              </h1>
+              <p className="mt-4 text-lg text-ink-soft">
+                Every role carries a transparent Signal Score and a real-time
+                red-flag check, computed from the listing&apos;s own words and
+                shown in full on the page. No black boxes, no fake AI.
+              </p>
+              <div className="mt-7 flex flex-wrap gap-3">
+                <Link href="#roles" className={buttonVariants({ size: "md" })}>
+                  Browse roles
+                </Link>
+                <Link
+                  href="/signup"
+                  className={buttonVariants({ variant: "secondary", size: "md" })}
+                >
+                  Post a role
+                </Link>
+              </div>
+            </motion.div>
 
-        <motion.div
-          initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.1 }}
-          className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-3"
-        >
-          <StatCard icon={Radio} value={totalJobs} label="Roles listed right now" />
-          <StatCard icon={TrendingUp} value={strongSignalCount} label="Rated Strong Signal" />
-          <StatCard icon={ShieldCheck} value={redFlagCount} label="Flagged for red flags" />
-        </motion.div>
+            <motion.div
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+              className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-3"
+            >
+              <StatCard icon={Radio} value={totalJobs} label="Roles listed right now" />
+              <StatCard icon={TrendingUp} value={strongSignalCount} label="Rated Strong Signal" />
+              <StatCard icon={ShieldCheck} value={redFlagCount} label="Flagged for red flags" />
+            </motion.div>
+          </div>
+
+          {previewJob && (
+            <div className="mx-auto w-full max-w-sm lg:mx-0">
+              <SignalPreviewCard job={previewJob} />
+            </div>
+          )}
+        </div>
       </div>
     </section>
   );

@@ -30,9 +30,17 @@ export default function BrowseJobs({
     return { totalJobs: jobs.length, strongSignalCount, redFlagCount };
   }, [jobs]);
 
+  // The hero's preview card shows whichever real listing currently scores
+  // highest — the product demonstrating itself on its own best example,
+  // not a mockup.
+  const previewJob = useMemo(() => {
+    if (jobs.length === 0) return null;
+    return [...jobs].sort((a, b) => computeSignal(b).score - computeSignal(a).score)[0];
+  }, [jobs]);
+
   return (
     <div>
-      <Hero {...stats} />
+      <Hero {...stats} previewJob={previewJob} />
 
       <div id="roles" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-10 sm:px-6">
         <SearchFilters filters={filters} onChange={setFilters} />
